@@ -327,5 +327,5 @@ def set_data():
 		latest_file = max(all_file)
 		print(unixtime_to_readable(latest_file))
 
-th1 = threading.Thread(target = set_data).start()
-# th2 = threading.Thread(target = backup_from_firebase).start()
+# th1 = threading.Thread(target = set_data).start()
+th2 = threading.Thread(target = backup_from_firebase).start()
