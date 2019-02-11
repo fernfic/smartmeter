@@ -131,6 +131,7 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh, p2_wh, p3_wh, p4_wh, list_col
     print("upload json "+file_name)
 
 def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check30):
+    global cur_d1m, cur_d1hr, cur_d30m, cur_wh 
     ref = db.reference('energy')
     print("get old value prepare at "+str(int(time.time())))
     if(len(time_data)>0):
@@ -143,6 +144,10 @@ def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check
     for val in result.values():
         time_value = val["time"]
         keep_day, keep_hour, keep_minute, check30, d, wh, time_data = check_condition(val, time_value,keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
+        cur_d1m = d[0]
+        cur_d30m = d[1]
+        cur_d1hr = d[2]
+        cur_wh = wh
 
     print("real time start at "+str(int(time.time())))
     time_before = 0
@@ -172,14 +177,17 @@ def backup_from_firebase():
     list_of_files = glob.glob(file_path+'/*') # * means all if need specific format then *.csv
     print(list_of_files)
     if(len(list_of_files) > 0):
-        latest_file = list_of_files[len(list_of_files)-1]
-        _, s = os.path.split(latest_file)
-        _d = int(os.path.splitext(s)[0].split('-')[0]) + 1
-        _m = os.path.splitext(s)[0].split('-')[1]
-        _y = os.path.splitext(s)[0].split('-')[2]
-        new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
-        print(new_date)
-        start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 25200
+        all_file = []
+        for f in list_of_files:
+            _, s = os.path.split(f)
+            _d = int(os.path.splitext(s)[0].split('-')[0]) + 1
+            _m = os.path.splitext(s)[0].split('-')[1]
+            _y = os.path.splitext(s)[0].split('-')[2]
+            new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
+            all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200)
+        latest_file = max(all_file)
+        # start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 25200
+        start = latest_file
     else:
         start = 1549386000
 
@@ -302,6 +310,22 @@ def check_condition(val, time_value, keep_day, keep_hour, keep_minute, check30, 
 
     return(keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
 
+def set_data():
+	module_dir = os.path.dirname(__file__)  
+	file_path = os.path.join(module_dir, '../../static/json/data_energy')
+	list_of_files = glob.glob(file_path+'/*')
+	print(list_of_files[len(list_of_files)-1])
+	if(len(list_of_files) > 0):
+		all_file = []
+		for f in list_of_files:
+			_, s = os.path.split(f)
+			_d = int(os.path.splitext(s)[0].split('-')[0]) + 1
+			_m = os.path.splitext(s)[0].split('-')[1]
+			_y = os.path.splitext(s)[0].split('-')[2]
+			new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
+			all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200)
+		latest_file = max(all_file)
+		print(unixtime_to_readable(latest_file))
 
-# th1 = threading.Thread(target = keep_data_realtime).start()
+th1 = threading.Thread(target = set_data).start()
 # th2 = threading.Thread(target = backup_from_firebase).start()
