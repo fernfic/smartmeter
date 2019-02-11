@@ -23,6 +23,7 @@ database_types = ['X', 'A', 'B', 'C']
 def edit_channel(request):
     ch = int(request.POST.get("m_ch"))
     des = request.POST.get("channel_description")
+    # _m = Meter.objects.filter(channel=1).update(description="Main House")
     _m = Meter.objects.filter(channel=ch).update(description=des)
     
     return redirect("/setting/")

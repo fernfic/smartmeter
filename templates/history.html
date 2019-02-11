@@ -161,6 +161,19 @@
         
         firebase.initializeApp(config);
         var database = firebase.database();
+
+        var col = JSON.parse('{{ d_col | escapejs }}');
+        var p1_wh = JSON.parse('{{ p1_val | escapejs }}');
+        var p2_wh = JSON.parse('{{ p2_val | escapejs }}');
+        var p3_wh = JSON.parse('{{ p3_val | escapejs }}');
+        var p4_wh = JSON.parse('{{ p4_val | escapejs }}');
+        var ch1_name = "{{ meter.0.description }}";
+        var ch2_name = "{{ meter.1.description }}";
+        var ch3_name = "{{ meter.2.description }}";
+        var ch4_name = "{{ meter.3.description }}";
+        $(document).ready(function() {
+            // alert(col);
+        });
     </script>
     <script src="{% static "js/historychart.js" %}"></script>
     <script>

@@ -25,8 +25,9 @@ import pandas as pd
 
 urllib3.disable_warnings()
 
-time_data, p1, p2, p3, p4, q1, q2, q3, q4, s1, s2, s3, s4 , pf1 = ([] for i in range(14))
-i1, i2, i3, i4, p1_wh, p2_wh, p3_wh, p4_wh = ([] for i in range(8))
+time_data, p1, p2, p3, p4, q1, q2, q3, q4, s1, s2, s3, s4, i1, i2, i3, i4, pf1 = ([] for i in range(18))
+p1_wh, p2_wh, p3_wh, p4_wh = ({} for i in range(4))
+cur_d1m, cur_d1hr, cur_d30m, cur_wh = ([] for i in range(4))
 
 tz = pytz.timezone('Asia/Bangkok')
 list_nodes = ['X', 'A', 'B', 'C']
@@ -82,7 +83,6 @@ def index(request):
                                           "meter": _m, "dbill": dbill })
 
 def setting(request):
-    global p1_wh
     module_dir = os.path.dirname(__file__)  
     ip_path = os.path.join(module_dir, '../../static/json/ip.txt')
     bill_path = os.path.join(module_dir, '../../static/json/setting.json')
@@ -94,12 +94,35 @@ def setting(request):
     ip = data_ip.read()
     _m = Meter.objects.all()
     _range = range(1,32)
-    print(len(p1_wh))
     return render(request, "setting.html",{"meter": _m, "ip_now" : ip, 
                                            "range": _range, "dbill":dbill, "unit": dunit})
 
 def history(request):
-    return render(request,"history.html")
+	column = []
+	_m = Meter.objects.all()
+	p1_val, p2_val, p3_val, p4_val = [[] for i in range(4)]
+	for k in p1_wh:
+		column.append(k)
+	column = sorted(column)
+	for c in column:
+		p1_val.append(p1_wh[c]/1000)
+		p2_val.append(p2_wh[c]/1000)
+		p3_val.append(p3_wh[c]/1000)
+		p4_val.append(p4_wh[c]/1000)
+
+	today = unixtime_to_readable(time.time())
+	taday_s = today[2].zfill(2)+'-'+today[1].zfill(2)+'-'+today[0]
+	if taday_s not in column:
+		column.append(taday_s)
+		p1_val.append(cur_wh[0]/1000)
+		p2_val.append(cur_wh[1]/1000)
+		p3_val.append(cur_wh[2]/1000)
+		p4_val.append(cur_wh[3]/1000)
+	return render(request,"history.html",{"d_col": json.dumps(column),"meter": _m,
+										  "p1_val": json.dumps(p1_val),
+										  "p2_val": json.dumps(p2_val),
+										  "p3_val": json.dumps(p3_val),
+										  "p4_val": json.dumps(p4_val)})
     
 def del_history(request):
     return redirect("/history/")
@@ -107,7 +130,8 @@ def del_history(request):
 def graph(request):
     return render(request, "graph.html")
 
-def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh, p2_wh, p3_wh, p4_wh, list_column):
+def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh_val, p2_wh_val, p3_wh_val, p4_wh_val, list_column):
+    global p1_wh, p2_wh, p3_wh, p4_wh 
     print("open save json")
     module_dir = os.path.dirname(__file__)  
     file_path = os.path.join(module_dir, '../../static/json/data_energy/')
@@ -117,7 +141,7 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh, p2_wh, p3_wh, p4_wh, list_col
     day = time_data[2]
     dic_data = {}
     time = ["1m", "30m", "1hr"]
-    keep_json = {"sum_p1" : round(p1_wh,2), "sum_p2" : round(p2_wh,2), "sum_p3" : round(p3_wh,2), "sum_p4" : round(p4_wh,2)}
+    keep_json = {"sum_p1" : round(p1_wh_val,2), "sum_p2" : round(p2_wh_val,2), "sum_p3" : round(p3_wh_val,2), "sum_p4" : round(p4_wh_val,2)}
     for t in time:
         dic_data = {}
         data = {}
@@ -129,6 +153,10 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh, p2_wh, p3_wh, p4_wh, list_col
     with open(file_path+file_name+".json", 'w+') as f:
         json.dump(keep_json, f, ensure_ascii=False)
     print("upload json "+file_name)
+    p1_wh[file_name] = keep_json['sum_p1']
+    p2_wh[file_name] = keep_json['sum_p2']
+    p3_wh[file_name] = keep_json['sum_p3']
+    p4_wh[file_name] = keep_json['sum_p4']
 
 def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check30):
     global cur_d1m, cur_d1hr, cur_d30m, cur_wh 
@@ -311,21 +339,22 @@ def check_condition(val, time_value, keep_day, keep_hour, keep_minute, check30, 
     return(keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
 
 def set_data():
+	global p1_wh, p2_wh, p3_wh, p4_wh
 	module_dir = os.path.dirname(__file__)  
-	file_path = os.path.join(module_dir, '../../static/json/data_energy')
-	list_of_files = glob.glob(file_path+'/*')
-	print(list_of_files[len(list_of_files)-1])
+	file_path = os.path.join(module_dir, '../../static/json/data_energy/')
+	list_of_files = glob.glob(file_path+'*')
 	if(len(list_of_files) > 0):
-		all_file = []
-		for f in list_of_files:
-			_, s = os.path.split(f)
-			_d = int(os.path.splitext(s)[0].split('-')[0]) + 1
+		for files in list_of_files:
+			_, s = os.path.split(files)
+			_d = int(os.path.splitext(s)[0].split('-')[0])
 			_m = os.path.splitext(s)[0].split('-')[1]
 			_y = os.path.splitext(s)[0].split('-')[2]
 			new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
-			all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200)
-		latest_file = max(all_file)
-		print(unixtime_to_readable(latest_file))
-
-# th1 = threading.Thread(target = set_data).start()
+			with open(file_path+s) as f:
+				data = json.load(f)
+				p1_wh[new_date] = data['sum_p1']
+				p2_wh[new_date] = data['sum_p2']
+				p3_wh[new_date] = data['sum_p3']
+				p4_wh[new_date] = data['sum_p4']
+th1 = threading.Thread(target = set_data).start()
 th2 = threading.Thread(target = backup_from_firebase).start()
