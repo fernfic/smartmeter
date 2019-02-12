@@ -39,33 +39,23 @@ for(var i=0;i<e.length;i++){
 
     // pf1.push([time, e[i]["PF"]]);
 }
-// var wp1 =
-// alert(e[e.length-1]["whole_p1"]-dec_time1)
-var val_p1 = (e[e.length-1]["P1_wh"] - dec_time1)/1000;
-var val_p2 = (e[e.length-1]["P2_wh"] - dec_time2)/1000;
-var val_p3 = (e[e.length-1]["P3_wh"] - dec_time3)/1000;
-var val_p4 = (e[e.length-1]["P4_wh"] - dec_time4)/1000;
+var val_p1 = daily_p[0];
+var val_p2 = daily_p[1];
+var val_p3 = daily_p[2];
+var val_p4 = daily_p[3];
 $('#pv1').text(val_p1.toFixed(2));
 $('#pv2').text(val_p2.toFixed(2));
 $('#pv3').text(val_p3.toFixed(2));
 $('#pv4').text(val_p4.toFixed(2));
 
-var val_pp1 = (e[e.length-1]["P1_wh"])/1000;
-var val_pp2 = (e[e.length-1]["P2_wh"])/1000;
-var val_pp3 = (e[e.length-1]["P3_wh"])/1000;
-var val_pp4 = (e[e.length-1]["P4_wh"])/1000;
+var val_pp1 = monthly_p[0];
+var val_pp2 = monthly_p[1];
+var val_pp3 = monthly_p[2];
+var val_pp4 = monthly_p[3];
 $('#ppm1').text(val_pp1.toFixed(2));
 $('#ppm2').text(val_pp2.toFixed(2));
 $('#ppm3').text(val_pp3.toFixed(2));
 $('#ppm4').text(val_pp4.toFixed(2));
-// $('#sv1').text(s1[e.length-1][1]);
-// $('#sv2').text(s2[e.length-1][1]);
-// $('#sv3').text(s3[e.length-1][1]);
-// $('#sv4').text(s4[e.length-1][1]);
-// $('#iv1').text(i1[e.length-1][1]);
-// $('#iv2').text(i2[e.length-1][1]);
-// $('#iv3').text(i3[e.length-1][1]);
-// $('#iv4').text(i4[e.length-1][1]);
 
 Highcharts.stockChart('all', {
 chart: {
@@ -136,39 +126,37 @@ chart: {
                 series2s.addPoint([x, s2], false, true);
                 series3s.addPoint([x, s3], false, true);
                 series4s.addPoint([x, s4], true, true);
-                
-                if(check == true){
-                    check = false;
-                    dec_time1 = changedData.P1_wh;
-                    dec_time2 = changedData.P2_wh;
-                    dec_time3 = changedData.P3_wh;
-                    dec_time4 = changedData.P4_wh;
-                }
-                var val_p1 = (changedData.P1_wh - dec_time1)/1000;
-                var val_p2 = (changedData.P2_wh - dec_time2)/1000;
-                var val_p3 = (changedData.P3_wh - dec_time3)/1000;
-                var val_p4 = (changedData.P4_wh - dec_time4)/1000;
+                // alert("t")
+                $.ajax({
+                    url: '/ajax/get_current_energy/',
+                    data: {
+                      'check': check
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                      if (data) {
+                        var val_p1 = data.daily_cur[0]
+                        var val_p2 = data.daily_cur[1]
+                        var val_p3 = data.daily_cur[2]
+                        var val_p4 = data.daily_cur[3]
+                        // alert(data.daily_cur[0])
+                        var val_pp1 = data.monthly_cur[0]
+                        var val_pp2 = data.monthly_cur[1]
+                        var val_pp3 = data.monthly_cur[2]
+                        var val_pp4 = data.monthly_cur[3]
+                        // alert(val_pp1);
+                      }
+                    }
+                  });
                 $('#pv1').text(val_p1.toFixed(2));
                 $('#pv2').text(val_p2.toFixed(2));
                 $('#pv3').text(val_p3.toFixed(2));
                 $('#pv4').text(val_p4.toFixed(2));
                 
-                var val_pp1 = changedData.P1_wh/1000;
-                var val_pp2 = changedData.P2_wh/1000;
-                var val_pp3 = changedData.P3_wh/1000;
-                var val_pp4 = changedData.P4_wh/1000;
                 $('#ppm1').text(val_pp1.toFixed(2));
                 $('#ppm2').text(val_pp2.toFixed(2));
                 $('#ppm3').text(val_pp3.toFixed(2));
                 $('#ppm4').text(val_pp4.toFixed(2));
-                // $('#sv1').text(s1);
-                // $('#sv2').text(s2);
-                // $('#sv3').text(s3);
-                // $('#sv4').text(s4);
-                // $('#iv1').text(i1);
-                // $('#iv2').text(i2);
-                // $('#iv3').text(i3);
-                // $('#iv4').text(i4);
             })
         }
     }

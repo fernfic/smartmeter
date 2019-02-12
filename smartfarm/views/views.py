@@ -26,8 +26,9 @@ import pandas as pd
 urllib3.disable_warnings()
 
 time_data, p1, p2, p3, p4, q1, q2, q3, q4, s1, s2, s3, s4, i1, i2, i3, i4, pf1 = ([] for i in range(18))
-p1_wh, p2_wh, p3_wh, p4_wh = ({} for i in range(4))
-cur_d1m, cur_d1hr, cur_d30m, cur_wh = ([] for i in range(4))
+p1_wh, p2_wh, p3_wh, p4_wh = ({'day':{},'month':{}, 'year':{}} for i in range(4))
+cur_d1m, cur_d1hr, cur_d30m = ([] for i in range(3))
+cur_wh = [0, 0, 0, 0]
 
 tz = pytz.timezone('Asia/Bangkok')
 list_nodes = ['X', 'A', 'B', 'C']
@@ -63,6 +64,7 @@ firebase_admin.initialize_app(cred, {
 
     
 def index(request):
+    global p1_wh, p2_wh, p3_wh, p4_wh, cur_wh
     last_4_hours = datetime.now() - timedelta(hours = 4)
     ref = db.reference('energy')
     start = datetime.now()
@@ -75,11 +77,20 @@ def index(request):
     data_bill = open(bill_path , 'r')  
     data = json.load(data_bill)
     dbill = data["bill-cycle"]
+
+    today = unixtime_to_readable(time.time())
+    # day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
+    month = today[1].zfill(2)+"-"+today[0]
+    # year = today[0]
+    daily_p = [cur_wh[0]/1000,cur_wh[1]/1000,cur_wh[2]/1000,cur_wh[3]/1000]
+    monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
+    monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
+    monthly_p3 = (p3_wh['month'][month] + cur_wh[2])/1000
+    monthly_p4 = (p4_wh['month'][month] + cur_wh[3])/1000
+    monthly_p = [monthly_p1, monthly_p2, monthly_p3, monthly_p4]
     return render(request, "index.html", {"energy": json.dumps(list(result.values())), 
-                                          "dec_time1": 0,
-                                          "dec_time2": 0,
-                                          "dec_time3": 0,
-                                          "dec_time4": 0,
+                                          "daily_p": json.dumps(daily_p),
+                                          "monthly_p": json.dumps(monthly_p),
                                           "meter": _m, "dbill": dbill })
 
 def setting(request):
@@ -98,21 +109,22 @@ def setting(request):
                                            "range": _range, "dbill":dbill, "unit": dunit})
 
 def history(request):
+	global p1_wh, p2_wh, p3_wh, p4_wh, cur_wh
 	column = []
 	_m = Meter.objects.all()
 	p1_val, p2_val, p3_val, p4_val = [[] for i in range(4)]
-	for k in p1_wh:
+	for k in p1_wh['day']:
 		column.append(k)
 	column = sorted(column)
 	for c in column:
-		p1_val.append(p1_wh[c]/1000)
-		p2_val.append(p2_wh[c]/1000)
-		p3_val.append(p3_wh[c]/1000)
-		p4_val.append(p4_wh[c]/1000)
+		p1_val.append(p1_wh['day'][c]/1000)
+		p2_val.append(p2_wh['day'][c]/1000)
+		p3_val.append(p3_wh['day'][c]/1000)
+		p4_val.append(p4_wh['day'][c]/1000)
 
 	today = unixtime_to_readable(time.time())
 	taday_s = today[2].zfill(2)+'-'+today[1].zfill(2)+'-'+today[0]
-	if taday_s not in column:
+	if taday_s not in column :
 		column.append(taday_s)
 		p1_val.append(cur_wh[0]/1000)
 		p2_val.append(cur_wh[1]/1000)
@@ -129,6 +141,22 @@ def del_history(request):
     
 def graph(request):
     return render(request, "graph.html")
+
+def get_current_energy(request):
+	# check = request.GET.get('check')
+	today = unixtime_to_readable(time.time())
+	# day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
+	month = today[1].zfill(2)+"-"+today[0]
+	# year = today[0]
+	monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
+	monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
+	monthly_p3 = (p3_wh['month'][month] + cur_wh[2])/1000
+	monthly_p4 = (p4_wh['month'][month] + cur_wh[3])/1000
+	data = {
+	    'daily_cur': [cur_wh[0]/1000, cur_wh[1]/1000, cur_wh[2]/1000, cur_wh[3]/1000],
+	    'monthly_cur': [monthly_p1, monthly_p2, monthly_p3, monthly_p4]
+	}
+	return JsonResponse(data)
 
 def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh_val, p2_wh_val, p3_wh_val, p4_wh_val, list_column):
     global p1_wh, p2_wh, p3_wh, p4_wh 
@@ -150,13 +178,16 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh_val, p2_wh_val, p3_wh_val, p4_
         dic_data[t] = data
         keep_json.update(dic_data)         
     file_name = day.zfill(2)+"-"+month.zfill(2)+"-"+year
+    file_name_m = month.zfill(2)+"-"+year
+    file_name_y = year
     with open(file_path+file_name+".json", 'w+') as f:
         json.dump(keep_json, f, ensure_ascii=False)
     print("upload json "+file_name)
-    p1_wh[file_name] = keep_json['sum_p1']
-    p2_wh[file_name] = keep_json['sum_p2']
-    p3_wh[file_name] = keep_json['sum_p3']
-    p4_wh[file_name] = keep_json['sum_p4']
+    set_data_realtime(file_name, file_name_m, file_name_y, [keep_json['sum_p1'],keep_json['sum_p2'],keep_json['sum_p3'],keep_json['sum_p4']])
+    # p1_wh['day'][file_name] = keep_json['sum_p1']
+    # p2_wh['day'][file_name] = keep_json['sum_p2']
+    # p3_wh['day'][file_name] = keep_json['sum_p3']
+    # p4_wh['day'][file_name] = keep_json['sum_p4']
 
 def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check30):
     global cur_d1m, cur_d1hr, cur_d30m, cur_wh 
@@ -343,18 +374,57 @@ def set_data():
 	module_dir = os.path.dirname(__file__)  
 	file_path = os.path.join(module_dir, '../../static/json/data_energy/')
 	list_of_files = glob.glob(file_path+'*')
+	old_month = ''
+	old_year = ''
 	if(len(list_of_files) > 0):
 		for files in list_of_files:
 			_, s = os.path.split(files)
 			_d = int(os.path.splitext(s)[0].split('-')[0])
 			_m = os.path.splitext(s)[0].split('-')[1]
 			_y = os.path.splitext(s)[0].split('-')[2]
-			new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
+			new_day = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
+			new_month = _m.zfill(2)+'-'+_y
+			new_year = _y
+			if old_month != new_month:
+				old_month = new_month
+				p1_wh['month'][new_month], p2_wh['month'][new_month], p3_wh['month'][new_month], p4_wh['month'][new_month] = [0 for i in range(4)]
+			if old_year != new_year:
+				old_year = new_year
+				p1_wh['year'][new_year], p2_wh['year'][new_year], p3_wh['year'][new_year], p4_wh['year'][new_year] = [0 for i in range(4)]
 			with open(file_path+s) as f:
 				data = json.load(f)
-				p1_wh[new_date] = data['sum_p1']
-				p2_wh[new_date] = data['sum_p2']
-				p3_wh[new_date] = data['sum_p3']
-				p4_wh[new_date] = data['sum_p4']
+				p1_wh['day'][new_day] = data['sum_p1']
+				p2_wh['day'][new_day] = data['sum_p2']
+				p3_wh['day'][new_day] = data['sum_p3']
+				p4_wh['day'][new_day] = data['sum_p4']
+
+				p1_wh['month'][new_month] += data['sum_p1']
+				p2_wh['month'][new_month] += data['sum_p2']
+				p3_wh['month'][new_month] += data['sum_p3']
+				p4_wh['month'][new_month] += data['sum_p4']
+
+				p1_wh['year'][new_year] += data['sum_p1']
+				p2_wh['year'][new_year] += data['sum_p2']
+				p3_wh['year'][new_year] += data['sum_p3']
+				p4_wh['year'][new_year] += data['sum_p4']
+
+def set_data_realtime(d, m, y, val):
+	global p1_wh, p2_wh, p3_wh, p4_wh
+	p1_wh['day'][d], p2_wh['day'][d], p3_wh['day'][d], p4_wh['day'][d] = val
+	try:
+		p1_wh['month'][m] += val[0]
+		p2_wh['month'][m] += val[1]
+		p3_wh['month'][m] += val[2]
+		p4_wh['month'][m] += val[3]
+	except:
+		p1_wh['month'][m], p2_wh['month'][m], p3_wh['month'][m], p4_wh['month'][m] = val
+	try:
+		p1_wh['year'][y] += val[0]
+		p2_wh['year'][y] += val[1]
+		p3_wh['year'][y] += val[2]
+		p4_wh['year'][y] += val[3]
+	except:
+		p1_wh['year'][y], p2_wh['year'][y], p3_wh['year'][y], p4_wh['year'][y] = val
+
 th1 = threading.Thread(target = set_data).start()
 th2 = threading.Thread(target = backup_from_firebase).start()
