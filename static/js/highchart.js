@@ -130,7 +130,7 @@ chart: {
                 $.ajax({
                     url: '/ajax/get_current_energy/',
                     data: {
-                      'check': check
+                      'check': true
                     },
                     dataType: 'json',
                     success: function (data) {
@@ -145,18 +145,18 @@ chart: {
                         var val_pp3 = data.monthly_cur[2]
                         var val_pp4 = data.monthly_cur[3]
                         // alert(val_pp1);
+                        $('#pv1').text(val_p1.toFixed(2));
+                        $('#pv2').text(val_p2.toFixed(2));
+                        $('#pv3').text(val_p3.toFixed(2));
+                        $('#pv4').text(val_p4.toFixed(2));
+                        
+                        $('#ppm1').text(val_pp1.toFixed(2));
+                        $('#ppm2').text(val_pp2.toFixed(2));
+                        $('#ppm3').text(val_pp3.toFixed(2));
+                        $('#ppm4').text(val_pp4.toFixed(2));
                       }
                     }
-                  });
-                $('#pv1').text(val_p1.toFixed(2));
-                $('#pv2').text(val_p2.toFixed(2));
-                $('#pv3').text(val_p3.toFixed(2));
-                $('#pv4').text(val_p4.toFixed(2));
-                
-                $('#ppm1').text(val_pp1.toFixed(2));
-                $('#ppm2').text(val_pp2.toFixed(2));
-                $('#ppm3').text(val_pp3.toFixed(2));
-                $('#ppm4').text(val_pp4.toFixed(2));
+                });
             })
         }
     }

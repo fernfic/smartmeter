@@ -68,7 +68,7 @@ def index(request):
     last_4_hours = datetime.now() - timedelta(hours = 4)
     ref = db.reference('energy')
     start = datetime.now()
-    result = ref.order_by_child('time').limit_to_last(1800).get() # 3 hr
+    result = ref.order_by_child('time').limit_to_last(1200).get() # 2 hr
     end = datetime.now()
     print(end - start)
     _m = Meter.objects.all()
@@ -143,6 +143,8 @@ def graph(request):
     return render(request, "graph.html")
 
 def get_current_energy(request):
+	global cur_wh, p1_wh, p2_wh, p3_wh, p4_wh
+	print("cur"+str(cur_wh[0]))
 	# check = request.GET.get('check')
 	today = unixtime_to_readable(time.time())
 	# day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
@@ -203,10 +205,6 @@ def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check
     for val in result.values():
         time_value = val["time"]
         keep_day, keep_hour, keep_minute, check30, d, wh, time_data = check_condition(val, time_value,keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
-        cur_d1m = d[0]
-        cur_d30m = d[1]
-        cur_d1hr = d[2]
-        cur_wh = wh
 
     print("real time start at "+str(int(time.time())))
     time_before = 0
@@ -219,6 +217,10 @@ def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check
                 print(unixtime_to_readable(time_value))
                 time_before = time_value
                 keep_day, keep_hour, keep_minute, check30, d, wh, time_data = check_condition(val, time_value,keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
+                cur_d1m = d[0]
+                cur_d30m = d[1]
+                cur_d1hr = d[2]
+                cur_wh = wh
                 time.sleep(1)
                                 
 def backup_from_firebase():
@@ -366,6 +368,7 @@ def check_condition(val, time_value, keep_day, keep_hour, keep_minute, check30, 
     d_1hr_cur = d_1hr_cur.append(pd.DataFrame([list_values], columns=list_column), ignore_index=True)
     d = [d_1m, d_30m, d_1hr, d_1m_cur, d_30m_cur, d_1hr_cur]
     wh = [p1_wh_value, p2_wh_value, p3_wh_value, p4_wh_value]
+    print(p1_wh_value)
 
     return(keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
 
