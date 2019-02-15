@@ -47,7 +47,7 @@ $('#pv1').text(val_p1.toFixed(2));
 $('#pv2').text(val_p2.toFixed(2));
 $('#pv3').text(val_p3.toFixed(2));
 $('#pv4').text(val_p4.toFixed(2));
-
+console.log("start web: "+val_p1);
 var val_pp1 = monthly_p[0];
 var val_pp2 = monthly_p[1];
 var val_pp3 = monthly_p[2];
@@ -144,6 +144,7 @@ chart: {
                         var val_pp2 = data.monthly_cur[1]
                         var val_pp3 = data.monthly_cur[2]
                         var val_pp4 = data.monthly_cur[3]
+                        console.log(val_p1);
                         // alert(val_pp1);
                         $('#pv1').text(val_p1.toFixed(2));
                         $('#pv2').text(val_p2.toFixed(2));
