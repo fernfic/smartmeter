@@ -80,7 +80,7 @@ def index(request):
 
     today = unixtime_to_readable(time.time())
     # day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
-    month = today[1].zfill(2)+"-"+today[0]
+    month = today[0]+"-"+today[1].zfill(2)
     # year = today[0]
     daily_p = [cur_wh[0]/1000,cur_wh[1]/1000,cur_wh[2]/1000,cur_wh[3]/1000]
     monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
@@ -123,7 +123,7 @@ def history(request):
 		p4_val.append(p4_wh['day'][c]/1000)
 
 	today = unixtime_to_readable(time.time())
-	taday_s = today[2].zfill(2)+'-'+today[1].zfill(2)+'-'+today[0]
+	taday_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
 	if taday_s not in column :
 		column.append(taday_s)
 		p1_val.append(cur_wh[0]/1000)
@@ -148,7 +148,7 @@ def get_current_energy(request):
 	# check = request.GET.get('check')
 	today = unixtime_to_readable(time.time())
 	# day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
-	month = today[1].zfill(2)+"-"+today[0]
+	month = today[0]+"-"+today[1].zfill(2)
 	# year = today[0]
 	monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
 	monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
@@ -180,12 +180,12 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh_val, p2_wh_val, p3_wh_val, p4_
         dic_data[t] = data
         keep_json.update(dic_data)         
     file_name = day.zfill(2)+"-"+month.zfill(2)+"-"+year
-    file_name_m = month.zfill(2)+"-"+year
-    file_name_y = year
     with open(file_path+file_name+".json", 'w+') as f:
         json.dump(keep_json, f, ensure_ascii=False)
     print("upload json "+file_name)
-    set_data_realtime(file_name, file_name_m, file_name_y, [keep_json['sum_p1'],keep_json['sum_p2'],keep_json['sum_p3'],keep_json['sum_p4']])
+    d = year+"-"+month.zfill(2)+"-"+day.zfill(2)
+    m = year+"-"+month.zfill(2)
+    set_data_realtime(d, m, year, [keep_json['sum_p1'],keep_json['sum_p2'],keep_json['sum_p3'],keep_json['sum_p4']])
     # p1_wh['day'][file_name] = keep_json['sum_p1']
     # p2_wh['day'][file_name] = keep_json['sum_p2']
     # p3_wh['day'][file_name] = keep_json['sum_p3']
@@ -236,18 +236,20 @@ def backup_from_firebase():
     module_dir = os.path.dirname(__file__)  
     file_path = os.path.join(module_dir, '../../static/json/data_energy')
     list_of_files = glob.glob(file_path+'/*') # * means all if need specific format then *.csv
-    print(list_of_files)
+    # print(list_of_files)
     if(len(list_of_files) > 0):
         all_file = []
         for f in list_of_files:
             _, s = os.path.split(f)
-            _d = int(os.path.splitext(s)[0].split('-')[0]) + 1
+            _d = int(os.path.splitext(s)[0].split('-')[0])
             _m = os.path.splitext(s)[0].split('-')[1]
             _y = os.path.splitext(s)[0].split('-')[2]
             new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
-            all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200)
+            print(new_date)
+            all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200+86400)
         latest_file = max(all_file)
-        # start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 25200
+        print("last file="+str(latest_file))
+        # start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 2520
         start = latest_file
     else:
         start = 1549386000
@@ -385,8 +387,8 @@ def set_data():
 			_d = int(os.path.splitext(s)[0].split('-')[0])
 			_m = os.path.splitext(s)[0].split('-')[1]
 			_y = os.path.splitext(s)[0].split('-')[2]
-			new_day = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
-			new_month = _m.zfill(2)+'-'+_y
+			new_day = _y+'-'+_m.zfill(2)+'-'+str(_d).zfill(2)
+			new_month = _y+'-'+_m.zfill(2)
 			new_year = _y
 			if old_month != new_month:
 				old_month = new_month
