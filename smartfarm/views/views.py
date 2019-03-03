@@ -502,7 +502,6 @@ def get_date_return_json(request):
         # print(column)
         for k in keep_data2:
             data[k] = keep_data2[k]
-        print(data)
     return JsonResponse(data)
 
 th1 = threading.Thread(target = set_data).start()
