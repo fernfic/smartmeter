@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^history/', views.history),
     url(r'^delete_history/', views.del_history),
     url(r'^ajax/get_current_energy/$', views.get_current_energy),
+    url(r'^ajax/get_date_return_json/$', views.get_date_return_json),
 
     # setting views
     url(r'^edit_channel/', setting_views.edit_channel),

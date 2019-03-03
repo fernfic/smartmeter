@@ -27,11 +27,10 @@ urllib3.disable_warnings()
 
 time_data, p1, p2, p3, p4, q1, q2, q3, q4, s1, s2, s3, s4, i1, i2, i3, i4, pf1 = ([] for i in range(18))
 p1_wh, p2_wh, p3_wh, p4_wh = ({'day':{},'month':{}, 'year':{}} for i in range(4))
-cur_d1m, cur_d1hr, cur_d30m = ([] for i in range(3))
+cur_d1m, cur_d1hr, cur_d30m = (pd.DataFrame() for i in range(3))
 cur_wh = [0, 0, 0, 0]
 
 tz = pytz.timezone('Asia/Bangkok')
-list_nodes = ['X', 'A', 'B', 'C']
 
 def unixtime_to_readable(unixtime):
     tz = pytz.timezone('Asia/Bangkok')
@@ -123,9 +122,9 @@ def history(request):
 		p4_val.append(p4_wh['day'][c]/1000)
 
 	today = unixtime_to_readable(time.time())
-	taday_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
-	if taday_s not in column :
-		column.append(taday_s)
+	today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
+	if today_s not in column :
+		column.append(today_s)
 		p1_val.append(cur_wh[0]/1000)
 		p2_val.append(cur_wh[1]/1000)
 		p3_val.append(cur_wh[2]/1000)
@@ -252,7 +251,7 @@ def backup_from_firebase():
         # start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 2520
         start = latest_file
     else:
-        start = 1549386000
+        start = 1549386000 # started at 06-02-2019
 
     endt = int(time.time())
     print("end", unixtime_to_readable(endt))
@@ -431,5 +430,80 @@ def set_data_realtime(d, m, y, val):
 	except:
 		p1_wh['year'][y], p2_wh['year'][y], p3_wh['year'][y], p4_wh['year'][y] = val
 
+def get_date_return_json(request):
+    if request.method == "POST" and request.is_ajax():
+        all_date = request.POST.get('all_date')
+        date_list = json.loads(all_date)
+        print(date_list)
+        module_dir = os.path.dirname(__file__)  
+        file_path = os.path.join(module_dir, '../../static/json/data_energy/')
+        list_column = ["p1", "p2", "p3", "p4", "s1", "s2", "s3", "s4", "q1", "q2", "q3", "q4", "i1", "i2", "i3", "i4", "pf1", "time"]
+        keep_data = pd.DataFrame()
+        exist_file, list_val = [], []
+        check_today = False
+        query_time = ""
+        today = unixtime_to_readable(time.time())
+        today_s = today[2].zfill(2)+'-'+today[1].zfill(2)+'-'+today[0]
+        for date in date_list:
+            file_name = file_path+date+".json"
+            if(os.path.isfile(file_name)):
+                exist_file.append(file_name)
+            elif(date == today_s):
+                check_today = True
+        if(1 <= len(exist_file) <= 7 or check_today):
+            query_time = "1m"
+        elif(len(exist_file) >= 8 and len(exist_file) <= 30):
+            query_time = "30m"
+        elif(len(exist_file) > 30):
+            query_time = "1hr"
+        else:
+            error = "No Date in Database"
+            data = {"error" : error}
+            return JsonResponse(data)
+        if(query_time):            
+            keep_dict = defaultdict(list)
+            for file_name in exist_file:
+                data_file = open(file_name , 'r')       
+                data = json.load(data_file)
+                for column in list_column:
+                    keep_dict[column] += data[query_time][column]
+            if(check_today):
+            	for column in list_column:
+                    keep_dict[column] += cur_d1m[column].values.tolist()
+            for column in list_column:
+                list_val.append(keep_dict[column])
+            keep_data = keep_data.append(pd.DataFrame([list_val], columns=list_column), ignore_index=True)
+        data = {}
+        for column in list_column:
+            data[column] = list(keep_data[column])  
+
+        column = []
+        _m = Meter.objects.all()
+        p1_val, p2_val, p3_val, p4_val = [[] for i in range(4)]
+        for k in date_list:
+            k = k.split('-')
+            n_d = k[2]+'-'+k[1]+'-'+k[0]
+            if n_d in p1_wh['day']:
+                column.append(n_d)
+        column = sorted(column)
+        for c in column:
+            p1_val.append(p1_wh['day'][c]/1000)
+            p2_val.append(p2_wh['day'][c]/1000)
+            p3_val.append(p3_wh['day'][c]/1000)
+            p4_val.append(p4_wh['day'][c]/1000)
+        today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
+        if check_today :
+            column.append(today_s)
+            p1_val.append(cur_wh[0]/1000)
+            p2_val.append(cur_wh[1]/1000)
+            p3_val.append(cur_wh[2]/1000)
+            p4_val.append(cur_wh[3]/1000)
+        keep_data2 = {'p1_val':p1_val, 'p2_val':p2_val, 'p3_val':p3_val, 'p4_val':p4_val, 'd_col':column}
+        # print(column)
+        for k in keep_data2:
+            data[k] = keep_data2[k]
+        print(data)
+    return JsonResponse(data)
+
 th1 = threading.Thread(target = set_data).start()
-th2 = threading.Thread(target = backup_from_firebase).start()
+# th2 = threading.Thread(target = backup_from_firebase).start()
