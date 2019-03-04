@@ -1,7 +1,3 @@
-// $(function(){
-    // $('#datepickerka').val(moment().subtract(6,'d').format('DD/MM/YYYY') + ' - ' + moment().format('DD/MM/YYYY'));
-// });
-
 function getDates(startDate, stopDate) {
     var dateArray = [];
     var currentDate = moment(startDate);
@@ -22,12 +18,8 @@ var chart_year = Highcharts.chart('container', {
     subtitle: {
         text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
     },
-        // scrollbar: {
-        //     enabled: true
-        // },
     xAxis: {
         categories: col,
-        // min: 0,
         max:6,
         crosshair: true,
     },
@@ -36,6 +28,9 @@ var chart_year = Highcharts.chart('container', {
         title: {
             text: 'Energy (kwh)'
         }
+    },
+    credits: {
+        enabled: false
     },
     tooltip: {
         headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
@@ -161,7 +156,9 @@ $.ajax({
                 scrollbar: {
                     enabled: false
                 },
-
+                credits: {
+                    enabled: false
+                },
                 series: [{
                     name: ch1_name,
                     data: (p1)
@@ -234,6 +231,9 @@ $("#button").click(function() {
                     },
                     subtitle: {
                         text: moment(start_date).format('DD/MM/YYYY')+' - '+moment(end_date).format('DD/MM/YYYY')
+                    },
+                    credits: {
+                        enabled: false
                     },
                     xAxis: {
                         categories: cols,
