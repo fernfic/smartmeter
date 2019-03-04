@@ -55,13 +55,18 @@
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
-             <div class="page-breadcrumb">
-                <div class="row">
-                    <div class="col-12 d-flex no-block align-items-center">
-                        <h4 class="page-title">History</h4>
+             <div class="page-breadcrumb ">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="page-title">History</h4>  
+                    </div>
+                    <div>
+                        <input type="text" id="datepickerka" name="datefilter" value="Select Date" style="width:180px" />
+                        <button type="button" id="button">Submit!</button> 
                     </div>
                 </div>
             </div>
+            
             <!-- ============================================================== -->
             <!-- End Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
@@ -75,8 +80,7 @@
                             <div id="container" style="height: 400px; min-width: 310px"></div>
                         </div>
                         <div class="card">
-                            <input type="text" id="datepickerka" name="datefilter" value="Select Date" />
-                            <button type="button" id="button">Click Me!</button>
+                            
                             <div id="container2"></div>
                             <div id="container3" style="height: 400px; min-width: 310px"></div>
                         </div>

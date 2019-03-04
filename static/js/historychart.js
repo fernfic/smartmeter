@@ -6,14 +6,14 @@ var chart_year = Highcharts.chart('container', {
     title: {
         text: 'Whole Energy Per Day'
     },
-    scrollbar: {
-        enabled: true
-    },
+        // scrollbar: {
+        //     enabled: true
+        // },
     xAxis: {
         categories: col,
         min: 0,
-        max:10,
-        crosshair: true
+        max:7,
+        crosshair: true,
     },
     yAxis: {
         min: 0,
@@ -35,6 +35,14 @@ var chart_year = Highcharts.chart('container', {
             borderWidth: 0
         },
         series: {
+            dataLabels: {
+                enabled: true,
+                align: 'center',
+                format: '{y:.2f}',
+                style: {
+                    fontSize: '9px',
+                }
+            },
             cursor: 'pointer',
             point: {
                     events: {
@@ -94,7 +102,6 @@ $("#button").click(function() {
                 var p3_whs = data.p3_val;
                 var p4_whs = data.p4_val;
                 var cols = data.d_col;
-                // console.log(data.time[0]);
                 for(var i=0;i< data.time[0].length ;i++){
                     var time = parseInt(data.time[0][i])*1000; 
                     p1.push([time, parseInt(data.p1[0][i])]);
@@ -108,7 +115,7 @@ $("#button").click(function() {
                         useUTC: false
                     },
                     rangeSelector: {
-                        inputEnabled: false, // »ÔŽàÅ×Í¡ÇÑ¹·Õè
+                        inputEnabled: false, 
                     },
                     legend: {
                         enabled : true,
@@ -165,13 +172,16 @@ $("#button").click(function() {
                     title: {
                         text: ''
                     },
-                    scrollbar: {
-                        enabled: true
-                    },
+                    // scrollbar: {
+                    //     enabled: true
+                    // },
                     xAxis: {
                         categories: cols,
-                        min:0,
+                        // min:0,
                         max:10,
+                        scrollbar: {
+                            enabled: true
+                        },
                         crosshair: true
                     },
                     yAxis: {
