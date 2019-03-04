@@ -6,8 +6,13 @@ var chart_year = Highcharts.chart('container', {
     title: {
         text: 'Whole Energy Per Day'
     },
+    scrollbar: {
+        enabled: true
+    },
     xAxis: {
         categories: col,
+        min: 0,
+        max:10,
         crosshair: true
     },
     yAxis: {
@@ -160,8 +165,13 @@ $("#button").click(function() {
                     title: {
                         text: ''
                     },
+                    scrollbar: {
+                        enabled: true
+                    },
                     xAxis: {
                         categories: cols,
+                        min:0,
+                        max:10,
                         crosshair: true
                     },
                     yAxis: {
@@ -186,12 +196,12 @@ $("#button").click(function() {
                         series: {
                             cursor: 'pointer',
                             point: {
-                                    events: {
-                                        click: function () {
-                                            alert('Category: ' + this.category);
-                                        }
+                                events: {
+                                    click: function () {
+                                        alert('Category: ' + this.category);
                                     }
                                 }
+                            }
                         }
                     },
                     series: [{
