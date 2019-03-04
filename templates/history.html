@@ -78,11 +78,12 @@
                     <div class="col-12">
                         <div class="card">
                             <div id="container" style="height: 400px; min-width: 310px"></div>
+                            <!-- <div id="container2"></div> -->
                         </div>
                         <div class="card">
                             
                             <div id="container2"></div>
-                            <div id="container3" style="height: 400px; min-width: 310px"></div>
+                            <!-- <div id="container3" style="height: 400px; min-width: 310px"></div> -->
                         </div>
                     </div>
                 </div>
@@ -177,6 +178,7 @@
         var database = firebase.database();
 
         var col = JSON.parse('{{ d_col | escapejs }}');
+        console.log(col);
         var p1_wh = JSON.parse('{{ p1_val | escapejs }}');
         var p2_wh = JSON.parse('{{ p2_val | escapejs }}');
         var p3_wh = JSON.parse('{{ p3_val | escapejs }}');

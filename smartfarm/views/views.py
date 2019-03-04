@@ -22,6 +22,7 @@ import urllib3
 from collections import defaultdict
 from statistics import mean 
 import pandas as pd
+import platform
 
 urllib3.disable_warnings()
 
@@ -114,13 +115,13 @@ def history(request):
     p1_val, p2_val, p3_val, p4_val = [[] for i in range(4)]
     for k in p1_wh['day']:
         column.append(k)
-    column = sorted(column)[-7:]
+    column = sorted(column)[-6:]
     for c in column:
         p1_val.append(p1_wh['day'][c]/1000)
         p2_val.append(p2_wh['day'][c]/1000)
         p3_val.append(p3_wh['day'][c]/1000)
         p4_val.append(p4_wh['day'][c]/1000)
-
+    # print(column)
     today = unixtime_to_readable(time.time())
     today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
     if today_s not in column :
@@ -129,6 +130,7 @@ def history(request):
         p2_val.append(cur_wh[1]/1000)
         p3_val.append(cur_wh[2]/1000)
         p4_val.append(cur_wh[3]/1000)
+    print("ppe", column)
     return render(request,"history.html",{"d_col": json.dumps(column),"meter": _m,
                                           "p1_val": json.dumps(p1_val),
                                           "p2_val": json.dumps(p2_val),
@@ -199,7 +201,10 @@ def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check
     else:
         keep_date = unixtime_to_readable(time.time())
         new_date = keep_date[2]+'-'+keep_date[1]+'-'+keep_date[0]
-        get_start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 25200
+        if(platform.system() == "Windows"):
+            get_start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))
+        else:
+            get_start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 25200
     result = ref.order_by_child('time').start_at(int(get_start)).end_at(int(time.time())).get()
     for val in result.values():
         time_value = val["time"]
@@ -245,7 +250,10 @@ def backup_from_firebase():
             _y = os.path.splitext(s)[0].split('-')[2]
             new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
             print(new_date)
-            all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200+86400)
+            if(platform.system() == "Windows"):
+                all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))+86400)
+            else:
+                all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200+86400)
         latest_file = max(all_file)
         print("last file="+str(latest_file))
         # start = int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple())) - 2520
@@ -434,7 +442,7 @@ def get_date_return_json(request):
     if request.method == "POST" and request.is_ajax():
         all_date = request.POST.get('all_date')
         date_list = json.loads(all_date)
-        print(date_list)
+        # print(date_list)
         module_dir = os.path.dirname(__file__)  
         file_path = os.path.join(module_dir, '../../static/json/data_energy/')
         list_column = ["p1", "p2", "p3", "p4", "s1", "s2", "s3", "s4", "q1", "q2", "q3", "q4", "i1", "i2", "i3", "i4", "pf1", "time"]
