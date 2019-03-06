@@ -77,7 +77,7 @@ def index(request):
     data_bill = open(bill_path , 'r')  
     data = json.load(data_bill)
     dbill = data["bill-cycle"]
-
+    unit = data["unit"]
     today = unixtime_to_readable(time.time())
     # day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
     month = today[0]+"-"+today[1].zfill(2)
@@ -91,7 +91,7 @@ def index(request):
     return render(request, "index.html", {"energy": json.dumps(list(result.values())), 
                                           "daily_p": json.dumps(daily_p),
                                           "monthly_p": json.dumps(monthly_p),
-                                          "meter": _m, "dbill": dbill })
+                                          "meter": _m, "dbill": dbill, "unit":unit })
 
 def setting(request):
     module_dir = os.path.dirname(__file__)  

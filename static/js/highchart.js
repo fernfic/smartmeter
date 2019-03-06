@@ -52,11 +52,13 @@ var val_pp1 = monthly_p[0];
 var val_pp2 = monthly_p[1];
 var val_pp3 = monthly_p[2];
 var val_pp4 = monthly_p[3];
+var cost_main = val_pp1*unit;
+console.log(unit);
 $('#ppm1').text(val_pp1.toFixed(2));
 $('#ppm2').text(val_pp2.toFixed(2));
 $('#ppm3').text(val_pp3.toFixed(2));
 $('#ppm4').text(val_pp4.toFixed(2));
-
+$('#cost_main').text("฿"+cost_main.toFixed(2));
 Highcharts.stockChart('all', {
 chart: {
     events: {
@@ -144,6 +146,7 @@ chart: {
                         var val_pp2 = data.monthly_cur[1]
                         var val_pp3 = data.monthly_cur[2]
                         var val_pp4 = data.monthly_cur[3]
+                        var cost_main = val_pp1*unit;
                         console.log(val_p1);
                         // alert(val_pp1);
                         $('#pv1').text(val_p1.toFixed(2));
@@ -155,6 +158,7 @@ chart: {
                         $('#ppm2').text(val_pp2.toFixed(2));
                         $('#ppm3').text(val_pp3.toFixed(2));
                         $('#ppm4').text(val_pp4.toFixed(2));
+                        $('#cost_main').text("฿"+cost_main.toFixed(2));
                       }
                     }
                 });
