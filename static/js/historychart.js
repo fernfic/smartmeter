@@ -3,7 +3,7 @@ function getDates(startDate, stopDate) {
     var currentDate = moment(startDate);
     var stopDate = moment(stopDate);
     while (currentDate <= stopDate) {
-        dateArray.push( moment(currentDate).format('DD-MM-YYYY') )
+        dateArray.push( moment(currentDate).format('YYYY-MM-DD') )
         currentDate = moment(currentDate).add(1, 'days');
     }
     return dateArray;
@@ -81,7 +81,6 @@ var chart_year = Highcharts.chart('container', {
 var dateTo = moment().format('YYYYMMDD');
 var dateFrom = moment().subtract(6,'d').format('YYYYMMDD');
 var get_all_date = getDates(dateFrom,dateTo);
-
 $.ajax({
     type:"POST",
     url: '/ajax/get_date_return_json/',
@@ -194,6 +193,7 @@ $("#button").click(function() {
     var end_date = $("#datepickerka").data('daterangepicker').endDate.format('YYYYMMDD');
     console.log(end_date);
     var get_all_date = getDates(start_date, end_date);
+    console.log(get_all_date)
     $.ajax({
         type:"POST",
         url: '/ajax/get_date_return_json/',
@@ -210,6 +210,7 @@ $("#button").click(function() {
                 var p3_whs = data.p3_val;
                 var p4_whs = data.p4_val;
                 var cols = data.d_col;
+                console.log(cols)
                 for(var i=0;i< data.time[0].length ;i++){
                     var time = parseInt(data.time[0][i])*1000; 
                     p1.push([time, parseInt(data.p1[0][i])]);

@@ -31,8 +31,6 @@ p1_wh, p2_wh, p3_wh, p4_wh = ({'day':{},'month':{}, 'year':{}} for i in range(4)
 cur_d1m, cur_d1hr, cur_d30m = (pd.DataFrame() for i in range(3))
 cur_wh = [0, 0, 0, 0]
 
-tz = pytz.timezone('Asia/Bangkok')
-
 def unixtime_to_readable(unixtime):
     tz = pytz.timezone('Asia/Bangkok')
     now = datetime.fromtimestamp(unixtime, tz)
@@ -79,9 +77,7 @@ def index(request):
     dbill = data["bill-cycle"]
     unit = data["unit"]
     today = unixtime_to_readable(time.time())
-    # day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
     month = today[0]+"-"+today[1].zfill(2)
-    # year = today[0]
     daily_p = [cur_wh[0]/1000,cur_wh[1]/1000,cur_wh[2]/1000,cur_wh[3]/1000]
     monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
     monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
@@ -146,11 +142,8 @@ def graph(request):
 def get_current_energy(request):
     global cur_wh, p1_wh, p2_wh, p3_wh, p4_wh
     print("cur"+str(cur_wh[0]))
-    # check = request.GET.get('check')
     today = unixtime_to_readable(time.time())
-    # day = today[2].zfill(2)+"-"+today[1].zfill(2)+"-"+today[0]
     month = today[0]+"-"+today[1].zfill(2)
-    # year = today[0]
     monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
     monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
     monthly_p3 = (p3_wh['month'][month] + cur_wh[2])/1000
@@ -180,17 +173,13 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh_val, p2_wh_val, p3_wh_val, p4_
             data[n] = list(eval("d_{}[n]".format(t)))
         dic_data[t] = data
         keep_json.update(dic_data)         
-    file_name = day.zfill(2)+"-"+month.zfill(2)+"-"+year
+    file_name = year+"-"+month.zfill(2)+"-"+day.zfill(2)
     with open(file_path+file_name+".json", 'w+') as f:
         json.dump(keep_json, f, ensure_ascii=False)
     print("upload json "+file_name)
     d = year+"-"+month.zfill(2)+"-"+day.zfill(2)
     m = year+"-"+month.zfill(2)
     set_data_realtime(d, m, year, [keep_json['sum_p1'],keep_json['sum_p2'],keep_json['sum_p3'],keep_json['sum_p4']])
-    # p1_wh['day'][file_name] = keep_json['sum_p1']
-    # p2_wh['day'][file_name] = keep_json['sum_p2']
-    # p3_wh['day'][file_name] = keep_json['sum_p3']
-    # p4_wh['day'][file_name] = keep_json['sum_p4']
 
 def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check30):
     global cur_d1m, cur_d1hr, cur_d30m, cur_wh 
@@ -245,9 +234,9 @@ def backup_from_firebase():
         all_file = []
         for f in list_of_files:
             _, s = os.path.split(f)
-            _d = int(os.path.splitext(s)[0].split('-')[0])
+            _d = int(os.path.splitext(s)[0].split('-')[2])
             _m = os.path.splitext(s)[0].split('-')[1]
-            _y = os.path.splitext(s)[0].split('-')[2]
+            _y = os.path.splitext(s)[0].split('-')[0]
             new_date = str(_d).zfill(2)+'-'+_m.zfill(2)+'-'+_y
             print(new_date)
             if(platform.system() == "Windows"):
@@ -391,9 +380,9 @@ def set_data():
     if(len(list_of_files) > 0):
         for files in list_of_files:
             _, s = os.path.split(files)
-            _d = int(os.path.splitext(s)[0].split('-')[0])
+            _d = int(os.path.splitext(s)[0].split('-')[2])
             _m = os.path.splitext(s)[0].split('-')[1]
-            _y = os.path.splitext(s)[0].split('-')[2]
+            _y = os.path.splitext(s)[0].split('-')[0]
             new_day = _y+'-'+_m.zfill(2)+'-'+str(_d).zfill(2)
             new_month = _y+'-'+_m.zfill(2)
             new_year = _y
@@ -442,7 +431,7 @@ def get_date_return_json(request):
     if request.method == "POST" and request.is_ajax():
         all_date = request.POST.get('all_date')
         date_list = json.loads(all_date)
-        # print(date_list)
+        print(date_list)
         module_dir = os.path.dirname(__file__)  
         file_path = os.path.join(module_dir, '../../static/json/data_energy/')
         list_column = ["p1", "p2", "p3", "p4", "s1", "s2", "s3", "s4", "q1", "q2", "q3", "q4", "i1", "i2", "i3", "i4", "pf1", "time"]
@@ -451,8 +440,9 @@ def get_date_return_json(request):
         check_today = False
         query_time = ""
         today = unixtime_to_readable(time.time())
-        today_s = today[2].zfill(2)+'-'+today[1].zfill(2)+'-'+today[0]
+        today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
         for date in date_list:
+            print(date)
             file_name = file_path+date+".json"
             if(os.path.isfile(file_name)):
                 exist_file.append(file_name)
@@ -489,17 +479,14 @@ def get_date_return_json(request):
         _m = Meter.objects.all()
         p1_val, p2_val, p3_val, p4_val = [[] for i in range(4)]
         for k in date_list:
-            k = k.split('-')
-            n_d = k[2]+'-'+k[1]+'-'+k[0]
-            if n_d in p1_wh['day']:
-                column.append(n_d)
+            if k in p1_wh['day']:
+                column.append(k)
         column = sorted(column)
         for c in column:
             p1_val.append(p1_wh['day'][c]/1000)
             p2_val.append(p2_wh['day'][c]/1000)
             p3_val.append(p3_wh['day'][c]/1000)
             p4_val.append(p4_wh['day'][c]/1000)
-        today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
         if check_today :
             column.append(today_s)
             p1_val.append(cur_wh[0]/1000)
@@ -507,7 +494,6 @@ def get_date_return_json(request):
             p3_val.append(cur_wh[2]/1000)
             p4_val.append(cur_wh[3]/1000)
         keep_data2 = {'p1_val':p1_val, 'p2_val':p2_val, 'p3_val':p3_val, 'p4_val':p4_val, 'd_col':column}
-        # print(column)
         for k in keep_data2:
             data[k] = keep_data2[k]
     return JsonResponse(data)
