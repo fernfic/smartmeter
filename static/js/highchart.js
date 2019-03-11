@@ -52,13 +52,13 @@ var val_pp1 = monthly_p[0];
 var val_pp2 = monthly_p[1];
 var val_pp3 = monthly_p[2];
 var val_pp4 = monthly_p[3];
-var cost_main = val_pp1*unit;
-console.log(unit);
+var bill_cost = bill_cost;
+var bill_cost_date = bill_cost_date;
 $('#ppm1').text(val_pp1.toFixed(2));
 $('#ppm2').text(val_pp2.toFixed(2));
 $('#ppm3').text(val_pp3.toFixed(2));
 $('#ppm4').text(val_pp4.toFixed(2));
-$('#cost_main').text("฿"+cost_main.toFixed(2));
+$('#cost_main').text("฿"+parseFloat(bill_cost).toFixed(2));
 Highcharts.stockChart('all', {
 chart: {
     events: {
@@ -129,6 +129,7 @@ chart: {
                 series3s.addPoint([x, s3], false, true);
                 series4s.addPoint([x, s4], true, true);
                 // alert("t")
+                
                 $.ajax({
                     url: '/ajax/get_current_energy/',
                     data: {
@@ -146,8 +147,12 @@ chart: {
                         var val_pp2 = data.monthly_cur[1]
                         var val_pp3 = data.monthly_cur[2]
                         var val_pp4 = data.monthly_cur[3]
-                        var cost_main = val_pp1*unit;
+                        var bill_cost = data.bill_cost;
+                        var bill_cost_date = data.bill_cost_date
+                        console.log(bill_cost);
                         console.log(val_p1);
+                        console.log(bill_cost_date);
+                        
                         // alert(val_pp1);
                         $('#pv1').text(val_p1.toFixed(2));
                         $('#pv2').text(val_p2.toFixed(2));
@@ -158,7 +163,7 @@ chart: {
                         $('#ppm2').text(val_pp2.toFixed(2));
                         $('#ppm3').text(val_pp3.toFixed(2));
                         $('#ppm4').text(val_pp4.toFixed(2));
-                        $('#cost_main').text("฿"+cost_main.toFixed(2));
+                        $('#cost_main').text("฿"+bill_cost.toFixed(2));
                       }
                     }
                 });
