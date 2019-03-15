@@ -48,16 +48,16 @@ $('#pv2').text(val_p2.toFixed(2));
 $('#pv3').text(val_p3.toFixed(2));
 $('#pv4').text(val_p4.toFixed(2));
 console.log("start web: "+val_p1);
-var val_pp1 = monthly_p[0];
-var val_pp2 = monthly_p[1];
-var val_pp3 = monthly_p[2];
-var val_pp4 = monthly_p[3];
+var val_pp1 = now_p[0];
+var val_pp2 = now_p[1];
+var val_pp3 = now_p[2];
+var val_pp4 = now_p[3];
 var bill_cost = bill_cost;
 var bill_cost_date = bill_cost_date;
-$('#ppm1').text(val_pp1.toFixed(2));
-$('#ppm2').text(val_pp2.toFixed(2));
-$('#ppm3').text(val_pp3.toFixed(2));
-$('#ppm4').text(val_pp4.toFixed(2));
+$('#ppm1').text(val_pp1.toFixed(1));
+$('#ppm2').text(val_pp2.toFixed(1));
+$('#ppm3').text(val_pp3.toFixed(1));
+$('#ppm4').text(val_pp4.toFixed(1));
 $('#cost_main').text("฿"+parseFloat(bill_cost).toFixed(2));
 Highcharts.stockChart('all', {
 chart: {
@@ -143,10 +143,10 @@ chart: {
                         var val_p3 = data.daily_cur[2]
                         var val_p4 = data.daily_cur[3]
                         // alert(data.daily_cur[0])
-                        var val_pp1 = data.monthly_cur[0]
-                        var val_pp2 = data.monthly_cur[1]
-                        var val_pp3 = data.monthly_cur[2]
-                        var val_pp4 = data.monthly_cur[3]
+                        var val_pp1 = data.now_p[0]
+                        var val_pp2 = data.now_p[1]
+                        var val_pp3 = data.now_p[2]
+                        var val_pp4 = data.now_p[3]
                         var bill_cost = data.bill_cost;
                         var bill_cost_date = data.bill_cost_date
                         console.log(bill_cost);
@@ -159,10 +159,10 @@ chart: {
                         $('#pv3').text(val_p3.toFixed(2));
                         $('#pv4').text(val_p4.toFixed(2));
                         
-                        $('#ppm1').text(val_pp1.toFixed(2));
-                        $('#ppm2').text(val_pp2.toFixed(2));
-                        $('#ppm3').text(val_pp3.toFixed(2));
-                        $('#ppm4').text(val_pp4.toFixed(2));
+                        $('#ppm1').text(val_pp1.toFixed(1));
+                        $('#ppm2').text(val_pp2.toFixed(1));
+                        $('#ppm3').text(val_pp3.toFixed(1));
+                        $('#ppm4').text(val_pp4.toFixed(1));
                         $('#cost_main').text("฿"+bill_cost.toFixed(2));
                       }
                     }
