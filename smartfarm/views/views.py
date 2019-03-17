@@ -416,6 +416,7 @@ def check_condition(val, time_value, keep_day, keep_hour, keep_minute, check30, 
 def set_data():
     global p1_wh, p2_wh, p3_wh, p4_wh, bill_cost, bill, unit, watt_data
     print("set_data")
+    print(calculate_cost_energy(175.73))
     module_dir = os.path.dirname(__file__)  
     file_path = os.path.join(module_dir, '../../static/json/data_energy/')
     # bill_cost_path = os.path.join(module_dir, '../../static/json/bill_cost/')
@@ -494,7 +495,31 @@ def save_bill_cost(cost, date):
     bill_cost = defaultdict(list)
     bill = 0
 
+def calculate_cost_energy(energy):
+    unit_first_150 = 3.2484
+    unit_more_151 = 4.2218
+    unit_more_400 = 4.4217
+    Ft = -0.116
+    service = 38.22
+    cost_150_unit, cost_more_151_unit, cost_more_400_unit = 0, 0, 0
+    energy_remain = energy - 150
+    if energy_remain > 0:
+        cost_150_unit = round(150 * unit_first_150,2)
+        if energy_remain <= 400:
+            cost_more_151_unit = round(energy_remain * unit_more_151,2)
+        else:
+            energy_remain = energy_remain - 400
+            cost_more_151_unit = round(400 * unit_more_151,2)
+            cost_more_400_unit = round(energy_remain * unit_more_400,2)
+    else:
+        cost_150_unit = energy * unit_first_150
+    cost_sum = cost_150_unit+cost_more_151_unit+cost_more_400_unit+service
+    cost_Ft = round(energy * Ft,2)
+    vat = round((cost_sum + cost_Ft)*(7/100),2)
+    last_cost = round(cost_sum + cost_Ft + vat,2)
+    return last_cost
 
+                
 def set_data_realtime(d, m, y, val):
     global p1_wh, p2_wh, p3_wh, p4_wh
     p1_wh['day'][d], p2_wh['day'][d], p3_wh['day'][d], p4_wh['day'][d] = val
