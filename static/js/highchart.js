@@ -53,7 +53,6 @@ var val_pp2 = now_p[1];
 var val_pp3 = now_p[2];
 var val_pp4 = now_p[3];
 var bill_cost = bill_cost;
-var bill_cost_date = bill_cost_date;
 $('#ppm1').text(val_pp1.toFixed(1));
 $('#ppm2').text(val_pp2.toFixed(1));
 $('#ppm3').text(val_pp3.toFixed(1));
@@ -148,10 +147,8 @@ chart: {
                         var val_pp3 = data.now_p[2]
                         var val_pp4 = data.now_p[3]
                         var bill_cost = data.bill_cost;
-                        var bill_cost_date = data.bill_cost_date
                         console.log(bill_cost);
                         console.log(val_p1);
-                        console.log(bill_cost_date);
                         
                         // alert(val_pp1);
                         $('#pv1').text(val_p1.toFixed(2));
