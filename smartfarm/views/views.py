@@ -13,7 +13,6 @@ import json
 from datetime import datetime, timedelta, date
 import requests
 import pytz
-
 import numpy as np
 import base64, zlib, time
 import threading
@@ -21,7 +20,6 @@ from jsonmerge import Merger
 import os, glob
 import urllib3
 from collections import defaultdict, deque
-# from collections import deque
 from statistics import mean 
 import pandas as pd
 import platform
@@ -29,13 +27,11 @@ import sklearn
 from sklearn.externals import joblib
 
 urllib3.disable_warnings()
-
+pee_ja = 20
 time_data, p1, p2, p3, p4, q1, q2, q3, q4, s1, s2, s3, s4, i1, i2, i3, i4, pf1 = ([] for i in range(18))
 p1_wh, p2_wh, p3_wh, p4_wh = ({'day':{},'month':{}, 'year':{}} for i in range(4))
 cur_d1m, cur_d1hr, cur_d30m = (pd.DataFrame() for i in range(3))
 cur_wh = [0, 0, 0, 0]
-bill_cost = defaultdict(list)
-bill, unit = 0, 0
 watt_data = deque([])
 
 key = {
@@ -58,7 +54,7 @@ firebase_admin.initialize_app(cred, {
 
     
 def index(request):
-    global p1_wh, p2_wh, p3_wh, p4_wh, cur_wh, bill_cost, bill, watt_data
+    global p1_wh, p2_wh, p3_wh, p4_wh, cur_wh, watt_data
     _m = Meter.objects.all()
     module_dir = os.path.dirname(__file__)
     bill_path = os.path.join(module_dir, '../../static/json/setting.json')
@@ -75,13 +71,14 @@ def index(request):
     now_p3 = watt_data[-1]["P3"]
     now_p4 = watt_data[-1]["P4"]
     now_p = [now_p1, now_p2, now_p3, now_p4]
-    # monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
+    monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
     # monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
     # monthly_p3 = (p3_wh['month'][month] + cur_wh[2])/1000
     # monthly_p4 = (p4_wh['month'][month] + cur_wh[3])/1000
     # monthly_p = [monthly_p1, monthly_p2, monthly_p3, monthly_p4]
-    bill_report = bill + cur_wh[0]/1000
-    cost = bill_report*float(dunit)
+    bill_cost, bill_date =  get_cur_wh()
+    data_cur = (bill_cost+cur_wh[0])/1000
+    cost = calculate_cost_energy(data_cur)
     return render(request, "index.html", {"energy": json.dumps(list(watt_data)), 
                                           "daily_p": json.dumps(daily_p),
                                           "now_p": json.dumps(now_p),
@@ -127,6 +124,7 @@ def history(request):
         p3_val.append(cur_wh[2]/1000)
         p4_val.append(cur_wh[3]/1000)
     data_7days = get_data_last_7days()
+    
     return render(request,"history.html",{"d_col": json.dumps(column),"meter": _m,
                                           "p1_val": json.dumps(p1_val),
                                           "p2_val": json.dumps(p2_val),
@@ -156,23 +154,25 @@ def unixtime_to_readable(unixtime):
     return (str(year), str(month), str(day), hour, minute, second)
 
 def get_current_energy(request):
-    global cur_wh, p1_wh, p2_wh, p3_wh, p4_wh, bill_cost, bill, unit, watt_data
-    # print("cur"+str(cur_wh[0]))
-    bill_date, unit = get_data_setting()
+    global cur_wh, p1_wh, p2_wh, p3_wh, p4_wh, watt_data
+    print("cur"+str(cur_wh[0]))
+    bill_date = get_data_setting()
     today = unixtime_to_readable(time.time())
     month = today[0]+"-"+today[1].zfill(2)
     day = today[0]+"-"+today[1].zfill(2)+'-'+today[2].zfill(2)
-    # monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
+    monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
     # monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
     # monthly_p3 = (p3_wh['month'][month] + cur_wh[2])/1000
     # monthly_p4 = (p4_wh['month'][month] + cur_wh[3])/1000
+    print("monthly ", monthly_p1)
+    bill_cost, bill_date =  get_cur_wh()
+    data_cur = (bill_cost+cur_wh[0])/1000
+    cost = calculate_cost_energy(data_cur)
     now_p1 = watt_data[-1]["P1"]
     now_p2 = watt_data[-1]["P2"]
     now_p3 = watt_data[-1]["P3"]
     now_p4 = watt_data[-1]["P4"]
     now_p = [now_p1, now_p2, now_p3, now_p4]
-    bill_report = bill+cur_wh[0]/1000
-    cost = bill_report*unit
     data = {
         'daily_cur': [cur_wh[0]/1000, cur_wh[1]/1000, cur_wh[2]/1000, cur_wh[3]/1000],
         # 'monthly_cur': [monthly_p1, monthly_p2, monthly_p3, monthly_p4],
@@ -209,7 +209,7 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh_val, p2_wh_val, p3_wh_val, p4_
     set_data_realtime(d, m, year, [keep_json['sum_p1'],keep_json['sum_p2'],keep_json['sum_p3'],keep_json['sum_p4']])
 
 def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check30):
-    global cur_d1m, cur_d1hr, cur_d30m, cur_wh, bill, bill_cost, watt_data
+    global cur_d1m, cur_d1hr, cur_d30m, cur_wh, watt_data
     ref = db.reference('energy')
     print("get old value prepare at "+str(int(time.time())))
     if(len(time_data)>0):
@@ -230,6 +230,7 @@ def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check
     time_before = 0
     print(len(time_data))
     day_before = ''
+    count = 0
     while(True):
         result = ref.order_by_child('time').limit_to_last(1).get()
         
@@ -247,16 +248,13 @@ def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check
                 cur_d30m = d[1]
                 cur_d1hr = d[2]
                 cur_wh = wh
-                # bill_date, unit = get_data_setting()
-                # cost = 0
-                # day_now = today[0]+"-"+today[1].zfill(2)+'-'+today[2].zfill(2)
-                # if bill_date == today[2]:
-                #     save_bill_cost(cost, bill_cost)
-                # if day_before != day_now:
-                #     bill_cost['date'].append(day_now)
-                #     day_before = day_now
-                # bill_report = bill + cur_wh[0]/1000
-                # cost = bill_report*unit
+                bill_cycle = get_data_setting()
+                day_now = today[0]+"-"+today[1].zfill(2)+'-'+today[2].zfill(2)
+                if bill_cycle == today[2]:
+                    sum_wh, bill_date = get_cur_wh()
+                    cost = calculate_cost_energy(sum_wh/1000)                    
+                    json_data = {min(bill_date)+"_"+max(bill_date):cost}
+                    save_bill_cost(json_data, True)
                 time.sleep(1)
 
 def get_data_setting():
@@ -265,8 +263,7 @@ def get_data_setting():
     json_setting_data = open(setting_json_path , 'r')  
     data_json = json.load(json_setting_data)
     bill_date = data_json['bill-cycle']
-    unit = float(data_json['unit'])
-    return bill_date, unit
+    return bill_date
 
 def backup_from_firebase():
     print("Start Backup")
@@ -419,23 +416,37 @@ def check_condition(val, time_value, keep_day, keep_hour, keep_minute, check30, 
 
     return(keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
 
+def get_cur_wh():
+    module_dir = os.path.dirname(__file__) 
+    bill_cost_path = os.path.join(module_dir, '../../static/json/bill_cost.json')
+    file_path = os.path.join(module_dir, '../../static/json/data_energy/')
+    json_bill_data = open(bill_cost_path , 'r')  
+    data_json = json.load(json_bill_data)
+    last_file = max(data_json.items())[0]
+    last_day = last_file.split('_')[1]
+    start = False
+    sum_wh = 0
+    bill_date = []
+    list_of_files = glob.glob(file_path+'*')
+    for files in list_of_files:
+        _, s = os.path.split(files)
+        date_time = os.path.splitext(s)[0]
+        if(start):
+            with open(file_path+s) as f:
+                data = json.load(f)
+            sum_wh += data['sum_p1']
+            bill_date.append(date_time)
+        if(last_day+'.json' == s):
+            start = True
+    return sum_wh, bill_date
+
 def set_data():
-    global p1_wh, p2_wh, p3_wh, p4_wh, bill_cost, bill, unit, watt_data
-    print("set_data")
-    print(calculate_cost_energy(175.73))
+    global p1_wh, p2_wh, p3_wh, p4_wh, watt_data
     module_dir = os.path.dirname(__file__)  
     file_path = os.path.join(module_dir, '../../static/json/data_energy/')
-    # bill_cost_path = os.path.join(module_dir, '../../static/json/bill_cost/')
-    # if os.listdir(bill_cost_path):
-    #     last_file = max(os.listdir(bill_cost_path)).split('.')[0]
-    # else:
-    #     last_file = ''
-    # bill_date, unit = get_data_setting()
     list_of_files = glob.glob(file_path+'*')
     old_month = ''
     old_year = ''
-    # start = False
-    
     if(len(list_of_files) > 0):
         for files in list_of_files:
             _, s = os.path.split(files)
@@ -451,14 +462,7 @@ def set_data():
             if old_year != new_year:
                 old_year = new_year
                 p1_wh['year'][new_year], p2_wh['year'][new_year], p3_wh['year'][new_year], p4_wh['year'][new_year] = [0 for i in range(4)]
-            # if last_file == '':
-            #     last_file = new_day
-            #     start = True
-            # if bill_date.zfill(2) == _d.zfill(2) and start:
-            #     if(bill_cost['date']):
-            #         cost = sum(bill_cost['bill'])*unit
-            #         save_bill_cost(cost, bill_cost['date'])
-                
+
             with open(file_path+s) as f:
                 data = json.load(f)
                 p1_wh['day'][new_day] = data['sum_p1']
@@ -471,35 +475,17 @@ def set_data():
                 p3_wh['month'][new_month] += data['sum_p3']
                 p4_wh['month'][new_month] += data['sum_p4']
 
-                # if(start):
-                #     bill_cost['date'].append(new_day)
-                #     bill_cost['bill'].append(data['sum_p1']/1000)
-                #     bill = sum(bill_cost['bill'])
-
                 p1_wh['year'][new_year] += data['sum_p1']
                 p2_wh['year'][new_year] += data['sum_p2']
                 p3_wh['year'][new_year] += data['sum_p3']
                 p4_wh['year'][new_year] += data['sum_p4']
-
-            # if last_file == new_day:
-            #     start = True
 
     ref = db.reference('energy')
     result = ref.order_by_child('time').limit_to_last(300).get() # 30 mins
     value_array = list(result.values())
     watt_data = deque(value_array)
 
-def save_bill_cost(cost, date):
-    global bill, bill_cost
-    file_name = max(date)
-    module_dir = os.path.dirname(__file__)  
-    bill_cost_path = os.path.join(module_dir, '../../static/json/bill_cost/')
-    keep_json = {"start":min(date), "end":max(date), "cost":cost}
-    with open(bill_cost_path+file_name+".json", 'w+') as f:
-        json.dump(keep_json, f, ensure_ascii=False)
-    print("upload json "+file_name)
-    bill_cost = defaultdict(list)
-    bill = 0
+
 
 def calculate_cost_energy(energy):
     unit_first_150 = 3.2484
@@ -543,6 +529,24 @@ def set_data_realtime(d, m, y, val):
         p4_wh['year'][y] += val[3]
     except:
         p1_wh['year'][y], p2_wh['year'][y], p3_wh['year'][y], p4_wh['year'][y] = val
+
+def save_bill_cost(json_data, update_json=False):
+    module_dir = os.path.dirname(__file__)  
+    json_path = os.path.join(module_dir, '../../static/json/')
+    file_name = json_path+"bill_cost.json"
+    
+    if(update_json):
+        bill_cost = open(file_name , 'r')  
+        data = json.load(bill_cost)
+        data.update(json_data)
+        with open(file_name, "w+") as f:
+            json.dump(data, f, ensure_ascii=False)
+    else:
+        keep_json = {}
+        for j in json_data:
+            keep_json.update(j)
+        with open(file_name, "w+") as f:
+            json.dump(keep_json, f, ensure_ascii=False)
 
 def get_data_last_7days():
     today = date.today()
