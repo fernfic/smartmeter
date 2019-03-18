@@ -25,6 +25,8 @@ from collections import defaultdict, deque
 from statistics import mean 
 import pandas as pd
 import platform
+import sklearn
+from sklearn.externals import joblib
 
 urllib3.disable_warnings()
 
@@ -136,7 +138,11 @@ def del_history(request):
     return redirect("/history/")
     
 def graph(request):
-    return render(request, "graph.html")
+	module_dir = os.path.dirname(__file__)
+	model_path = os.path.join(module_dir, '../../static/json/model.pkl')
+	load_model = joblib.load(model_path)
+	print(load_model)
+	return render(request, "graph.html")
 
 def unixtime_to_readable(unixtime):
     tz = pytz.timezone('Asia/Bangkok')
