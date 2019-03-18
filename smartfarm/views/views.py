@@ -95,11 +95,12 @@ def setting(request):
     data = json.load(data_bill)
     dbill = data["bill-cycle"]
     dunit = data["unit"]
+    dlive = data["live"]
     ip = data_ip.read()
     _m = Meter.objects.all()
     _range = range(1,32)
     return render(request, "setting.html",{"meter": _m, "ip_now" : ip, 
-                                           "range": _range, "dbill":dbill, "unit": dunit})
+                                           "range": _range, "dbill":dbill, "unit": dunit, "live":dlive})
 
 def history(request):
     global p1_wh, p2_wh, p3_wh, p4_wh, cur_wh
@@ -485,33 +486,39 @@ def set_data():
     value_array = list(result.values())
     watt_data = deque(value_array)
 
-
-
 def calculate_cost_energy(energy):
-    unit_first_150 = 3.2484
-    unit_more_151 = 4.2218
-    unit_more_400 = 4.4217
-    Ft = -0.116
-    service = 38.22
-    cost_150_unit, cost_more_151_unit, cost_more_400_unit = 0, 0, 0
-    energy_remain = energy - 150
-    if energy_remain > 0:
-        cost_150_unit = round(150 * unit_first_150,2)
-        if energy_remain <= 400:
-            cost_more_151_unit = round(energy_remain * unit_more_151,2)
+    module_dir = os.path.dirname(__file__)  
+    bill_path = os.path.join(module_dir, '../../static/json/setting.json')
+    data_bill = open(bill_path , 'r')  
+    data = json.load(data_bill)
+    dlive = data["live"]
+    if(dlive == "Home"):
+        unit_first_150 = 3.2484
+        unit_more_151 = 4.2218
+        unit_more_400 = 4.4217
+        Ft = -0.116
+        service = 38.22
+        cost_150_unit, cost_more_151_unit, cost_more_400_unit = 0, 0, 0
+        energy_remain = energy - 150
+        if energy_remain > 0:
+            cost_150_unit = round(150 * unit_first_150,2)
+            if energy_remain <= 400:
+                cost_more_151_unit = round(energy_remain * unit_more_151,2)
+            else:
+                energy_remain = energy_remain - 400
+                cost_more_151_unit = round(400 * unit_more_151,2)
+                cost_more_400_unit = round(energy_remain * unit_more_400,2)
         else:
-            energy_remain = energy_remain - 400
-            cost_more_151_unit = round(400 * unit_more_151,2)
-            cost_more_400_unit = round(energy_remain * unit_more_400,2)
-    else:
-        cost_150_unit = energy * unit_first_150
-    cost_sum = cost_150_unit+cost_more_151_unit+cost_more_400_unit+service
-    cost_Ft = round(energy * Ft,2)
-    vat = round((cost_sum + cost_Ft)*(7/100),2)
-    last_cost = round(cost_sum + cost_Ft + vat,2)
+            cost_150_unit = energy * unit_first_150
+        cost_sum = cost_150_unit+cost_more_151_unit+cost_more_400_unit+service
+        cost_Ft = round(energy * Ft,2)
+        vat = round((cost_sum + cost_Ft)*(7/100),2)
+        last_cost = round(cost_sum + cost_Ft + vat,2)
+    elif(dlive == "Dorm"):
+        dunit = float(data["unit"])
+        last_cost = round(energy*dunit,2)
     return last_cost
 
-                
 def set_data_realtime(d, m, y, val):
     global p1_wh, p2_wh, p3_wh, p4_wh
     p1_wh['day'][d], p2_wh['day'][d], p3_wh['day'][d], p4_wh['day'][d] = val
@@ -668,4 +675,4 @@ def get_date_return_json(request):
     return JsonResponse(data)
 
 th1 = threading.Thread(target = set_data).start()
-th2 = threading.Thread(target = backup_from_firebase).start()
+# th2 = threading.Thread(target = backup_from_firebase).start()

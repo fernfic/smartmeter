@@ -37,6 +37,8 @@ def edit_ip(request):
 def edit_bill(request):
     bill = request.POST.get("cbill")
     unit = request.POST.get("unit")
+    live = request.POST.get("liveat")
+    print(live)
     sum_wh, cost = 0, 0
     date = []
     json_array = []
@@ -61,7 +63,7 @@ def edit_bill(request):
             date.append(date_time)
     save_bill_cost(json_array)
     file_path = os.path.join(module_dir, '../../static/json/setting.json')
-    data = {"bill-cycle": bill, "unit": unit}
+    data = {"bill-cycle": bill, "unit": unit, "live":live}
     with open(file_path, 'w') as f:
         json.dump(data, f, ensure_ascii=False)     
     return redirect("/setting/")

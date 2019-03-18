@@ -99,20 +99,30 @@
                         <div class="col-3 text-right">
                             <h5>Date:</h5>
                         </div>
-                        <div class="col-9">
+                        <div class="col-2">
                             <select id="bill">
                                 {% for i in range %}
                                 <option value="{{ i }}">{{ i }}</option>
                                 {% endfor %}
                             </select>
                         </div>
+                        <div class="col-2">
+                            <h5>Live at :</h5>
+                            
+                        </div>
+                        <div  class="col-2">
+                            <input type="radio" id ='liveat' name="liveat" value="Home"> Home
+                        </div>
+                        <div  class="col-2">
+                                <input type="radio" id='liveat' name="liveat" value="Dorm" class="enable_tb"> Dorm
+                            </div>
                         </br>
                         </br>
                         <div class="col-3  text-right">
                             <h5>Price :</h5>
                         </div>
                         <div  class="col-6">
-                            <input class="form-control" id="unit" name="unit" value="">
+                            <input class="form-control" id="unit" name="unit" value="" disabled="disabled">
                         </div>
                         <div class="col-3">
                            <h5>Baht/Unit</h5>
