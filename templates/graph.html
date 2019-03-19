@@ -10,16 +10,16 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static "assets/images/logoja-icon.png" %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'assets/images/logoja-icon.png' %}">
     <title>Welcome</title>
     <!-- Custom CSS -->
-    <!--<link href="{% static "assets/libs/flot/css/float-chart.css" %}" rel="stylesheet">-->
+    <!--<link href="{% static 'assets/libs/flot/css/float-chart.css' %}" rel="stylesheet">-->
     <!-- Custom CSS -->
-    <link href="{% static "css/style.min.css" %}" rel="stylesheet">
-    <link href="{% static "css/button.css" %}" rel="stylesheet">
-    <link href="{% static "css/main.css" %}" rel="stylesheet">
+    <link href="{% static 'css/style.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/button.css' %}" rel="stylesheet">
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
     
-    <link href="{% static "css/datepicker/bootstrap-datepicker.css" %}" rel="stylesheet">
+    <link href="{% static 'css/datepicker/bootstrap-datepicker.css' %}" rel="stylesheet">
     <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
     <!--<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>-->
     
@@ -71,7 +71,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div id="container"></div>
+                            <div id="predict_container" style="height: 400px; min-width: 310px"></div>
                         </div>
                     </div>
                 </div>
@@ -136,27 +136,27 @@
     <!-- ============================================================== -->
     <!-- All Jquery -->
     <!-- ============================================================== -->
-    <script src="{% static "assets/libs/jquery/dist/jquery.min.js" %}"></script>
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
     <!-- Bootstrap tether Core JavaScript -->
-    <script src="{% static "assets/libs/popper.js/dist/umd/popper.min.js" %}"></script>
-    <script src="{% static "assets/libs/bootstrap/dist/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js" %}"></script>
-    <script src="{% static "assets/extra-libs/sparkline/sparkline.js" %}"></script>
+    <script src="{% static 'assets/libs/popper.js/dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/sparkline/sparkline.js' %}"></script>
     <!--Menu sidebar -->
-    <script src="{% static "js/sidebarmenu.js" %}"></script>
+    <script src="{% static 'js/sidebarmenu.js' %}"></script>
     <!--Custom JavaScript -->
-    <script src="{% static "js/custom.min.js" %}"></script>
+    <script src="{% static 'js/custom.min.js' %}"></script>
     <!--This page JavaScript -->
     <!-- <script src="dist/js/pages/dashboards/dashboard1.js"></script> -->
     <!-- Charts js Files -->
-    <script src="{% static "assets/libs/flot/excanvas.js" %}"></script>
-    <script src="{% static "assets/libs/flot/jquery.flot.js" %}"></script>
-    <script src="{% static "assets/libs/flot/jquery.flot.pie.js" %}"></script>
-    <script src="{% static "assets/libs/flot/jquery.flot.time.js" %}"></script>
-    <script src="{% static "assets/libs/flot/jquery.flot.stack.js" %}"></script>
-    <script src="{% static "assets/libs/flot/jquery.flot.crosshair.js" %}"></script>
-    <script src="{% static "assets/libs/flot.tooltip/js/jquery.flot.tooltip.min.js" %}"></script>
-    <script src="{% static "js/pages/chart/chart-page-init.js" %}"></script>
+    <script src="{% static 'assets/libs/flot/excanvas.js' %}"></script>
+    <script src="{% static 'assets/libs/flot/jquery.flot.js' %}"></script>
+    <script src="{% static 'assets/libs/flot/jquery.flot.pie.js' %}"></script>
+    <script src="{% static 'assets/libs/flot/jquery.flot.time.js' %}"></script>
+    <script src="{% static 'assets/libs/flot/jquery.flot.stack.js' %}"></script>
+    <script src="{% static 'assets/libs/flot/jquery.flot.crosshair.js' %}"></script>
+    <script src="{% static 'assets/libs/flot.tooltip/js/jquery.flot.tooltip.min.js' %}"></script>
+    <script src="{% static 'js/pages/chart/chart-page-init.js' %}"></script>
     <script src="https://code.highcharts.com/stock/highstock.js"></script>
     <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
@@ -164,9 +164,23 @@
     <script>
         $(document).ready(function () {
         });
-        
+        var e = JSON.parse('{{ energy | escapejs }}');
+        var pred = JSON.parse('{{ pred | escapejs }}');
     </script>
-    <script src="{% static "js/historychart.js" %}"></script>
+    <script>
+        var config = {
+            apiKey: "AIzaSyBlkrkJS2aKF8HSGtgS0sR5aw-MiVZUSGM",
+            authDomain: "data-log-fb39d.firebaseapp.com",
+            databaseURL: "https://data-log-fb39d.firebaseio.com",
+            projectId: "data-log-fb39d",
+            storageBucket: "data-log-fb39d.appspot.com",
+            messagingSenderId: "946043644125"
+        };
+        
+        firebase.initializeApp(config);
+        var database = firebase.database(); 
+    </script>
+    <script src="{% static 'js/predictchart.js' %}"></script>
 </body>
 
 </html>

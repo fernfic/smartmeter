@@ -25,6 +25,7 @@ import pandas as pd
 import platform
 import sklearn
 from sklearn.externals import joblib
+from skmultilearn.problem_transform import LabelPowerset
 
 urllib3.disable_warnings()
 pee_ja = 20
@@ -51,6 +52,11 @@ cred = credentials.Certificate(key)
 firebase_admin.initialize_app(cred, {
     'databaseURL' : 'https://data-log-fb39d.firebaseio.com/'
 })
+module_dir = os.path.dirname(__file__)
+model_path = os.path.join(module_dir, '../../static/json/model.pkl')
+load_model = joblib.load(model_path)
+model_path2 = os.path.join(module_dir, '../../static/json/inverse.pkl')
+lp = joblib.load(model_path2)
 
     
 def index(request):
@@ -137,11 +143,56 @@ def del_history(request):
     return redirect("/history/")
     
 def graph(request):
-	module_dir = os.path.dirname(__file__)
-	model_path = os.path.join(module_dir, '../../static/json/model.pkl')
-	load_model = joblib.load(model_path)
-	print(load_model)
-	return render(request, "graph.html")
+	global watt_data, load_model, lp
+	hour = ['0'+str(i) if len(str(i)) == 1  else str(i) for i in range(24)]
+	keep_app = []
+	p_pre = []
+	q_pre = []
+	for i in range(len(watt_data)):
+		t = watt_data[i]['time']
+		p_pre.append(watt_data[i]['P1'])
+		q_pre.append(watt_data[i]['Q1'])
+		dt = datetime.fromtimestamp(int(t))
+		keep_app.append(int(dt.strftime('%H')))
+	X_test = pd.DataFrame({'time':keep_app,'P':p_pre,'Q':q_pre})
+	# print(X_test)
+	predictions1 = load_model.predict(X_test)
+	inverse_fn = lambda lbl: lp.inverse_transform(lbl)
+	y_pred = inverse_fn(predictions1.flatten().astype(int)).toarray()
+	print(y_pred)
+	light_pd = pd.DataFrame({i:y_pred[:,i] for i in range(4)})
+	plug_pd = pd.DataFrame({i:y_pred[:,i+4] for i in range(4)})
+	air_pd = pd.DataFrame({i:y_pred[:,i+8] for i in range(4)})
+	y_pred_ev = pd.DataFrame({})
+	y_pred_ev['light'] = list(pd.Series(light_pd.columns[np.where(light_pd==1)[1]]))
+	y_pred_ev['plug'] = list(pd.Series(plug_pd.columns[np.where(plug_pd==1)[1]]))
+	y_pred_ev['air'] = list(pd.Series(air_pd.columns[np.where(air_pd==1)[1]]))
+	k_mean = list([[2.16199058e+00, 8.54631582e+00, 3.85387903e-02],
+        [8.63384362e+01, 9.34061386e+01, 5.32994809e-01],
+        [5.92184598e+01, 6.47752493e+01, 3.68831347e-01],
+        [1.22369367e+02, 1.29498280e+02, 7.46189757e-01]]), list([[1.14451223e+02, 1.17987914e+02, 6.95978774e-01],
+        [1.12576012e+03, 1.70720111e+02, 4.84860343e+00],
+        [3.88180160e+02, 1.30899709e+02, 1.73174125e+00],
+        [1.13181779e+02, 1.19813287e+02, 6.97976448e-01]]), list([[3.61758519e+00, 5.40269616e+01, 2.30243285e-01],
+        [4.10586068e+02, 5.55312975e+02, 2.88970353e+00],
+        [2.06855866e+03, 1.11085420e+01, 8.63353700e+00],
+        [8.02895926e+02, 1.68417926e+02, 3.45394272e+00]])
+	k_mean = np.array(k_mean)
+	p_val = np.array([k_mean[i][:,0] for i in range(3)])
+
+	y_pd = c2v(y_pred_ev, p_val)
+	print(y_pd.head())
+	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)),
+		                                 "pred": json.dumps(y_pd.to_dict())})
+
+def c2v(X, lbl):
+    columns = X.columns
+    val = np.copy(X).astype(float)
+    for i, l in enumerate(lbl):
+        _k = val[:, i]
+        for j in range(4):
+            val[_k==j, i] = l[j]
+    return pd.DataFrame(val, columns=columns)
 
 def unixtime_to_readable(unixtime):
     tz = pytz.timezone('Asia/Bangkok')
