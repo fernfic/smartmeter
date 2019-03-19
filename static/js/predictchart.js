@@ -46,28 +46,33 @@ for(var i=0;i<e.length;i++){
 
     // pf1.push([time, e[i]["PF"]]);
 }
-Highcharts.stockChart('predict_container', {
+Highcharts.stockChart('predict_light', {
 chart: {
     events: {
         load: function () {
             // set up the updating of the chart each second
             var series1 = this.series[0];
             var series2 = this.series[1];
-            var series3 = this.series[2];
-            var series4 = this.series[3];
             var ref = database.ref("energy");
             ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
                 var changedData = snapshot.val();                        
                 var x =  changedData.time*1000;
-                var p1 =  changedData.P1;
                 var p2 =  changedData.P2;
-                var p3 =  changedData.P3;
-                var p4 =  changedData.P4;
-               
-                series1.addPoint([x, p1], false, true);
-                series2.addPoint([x, p2], false, true);
-                series3.addPoint([x, p3], false, true);
-                series4.addPoint([x, p4], true, true);
+                series1.addPoint([x, p2], false, true);
+                $.ajax({
+                    url: '/ajax/get_current_predict/',
+                    data: {
+                      'check': true
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data) {
+                            var p2_pre = data['light'][0]
+                            // alert(data);
+                            series2.addPoint([x, p2_pre], true, true);
+                        }
+                    }
+                });
             })
         }
     }
@@ -126,10 +131,10 @@ scrollbar: {
 
 series: [{
     name: 'Actual',
-    data: (p4)
+    data: (p2)
 },
 {
     name: 'Predict',
-    data: (p4_pre)
+    data: (p2_pre)
 }]
 });

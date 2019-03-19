@@ -144,7 +144,6 @@ def del_history(request):
     
 def graph(request):
 	global watt_data, load_model, lp
-	hour = ['0'+str(i) if len(str(i)) == 1  else str(i) for i in range(24)]
 	keep_app = []
 	p_pre = []
 	q_pre = []
@@ -155,11 +154,14 @@ def graph(request):
 		dt = datetime.fromtimestamp(int(t))
 		keep_app.append(int(dt.strftime('%H')))
 	X_test = pd.DataFrame({'time':keep_app,'P':p_pre,'Q':q_pre})
-	# print(X_test)
 	predictions1 = load_model.predict(X_test)
+	y_pd = convert_values(predictions1)
+	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)),
+		                                 "pred": json.dumps(y_pd.to_dict())})
+
+def convert_values(predictions1):
 	inverse_fn = lambda lbl: lp.inverse_transform(lbl)
 	y_pred = inverse_fn(predictions1.flatten().astype(int)).toarray()
-	print(y_pred)
 	light_pd = pd.DataFrame({i:y_pred[:,i] for i in range(4)})
 	plug_pd = pd.DataFrame({i:y_pred[:,i+4] for i in range(4)})
 	air_pd = pd.DataFrame({i:y_pred[:,i+8] for i in range(4)})
@@ -179,12 +181,9 @@ def graph(request):
         [8.02895926e+02, 1.68417926e+02, 3.45394272e+00]])
 	k_mean = np.array(k_mean)
 	p_val = np.array([k_mean[i][:,0] for i in range(3)])
-
 	y_pd = c2v(y_pred_ev, p_val)
-	print(y_pd.head())
-	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)),
-		                                 "pred": json.dumps(y_pd.to_dict())})
-
+	return y_pd
+	
 def c2v(X, lbl):
     columns = X.columns
     val = np.copy(X).astype(float)
@@ -205,8 +204,21 @@ def unixtime_to_readable(unixtime):
     second = now.strftime('%S')
     return (str(year), str(month), str(day), hour, minute, second)
 
+def get_current_predict(request):
+	global load_model, lp, watt_data
+	p_pre = [watt_data[-1]['P1']]
+	q_pre = [watt_data[-1]['Q1']]
+	t = watt_data[-1]['time']
+	dt = datetime.fromtimestamp(int(t))
+	keep_app = [int(dt.strftime('%H'))]
+	X_test = pd.DataFrame({'time':keep_app,'P':p_pre,'Q':q_pre})
+	predictions1 = load_model.predict(X_test)
+	y_pd = convert_values(predictions1)
+	data = y_pd.to_dict()
+	return JsonResponse(data)
+
 def get_current_energy(request):
-    global cur_wh, p1_wh, p2_wh, p3_wh, p4_wh, watt_data
+    global cur_wh, p1_wh, p2_wh, p3_wh, p4_wh, watt_data	
     print("cur"+str(cur_wh[0]))
     bill_date = get_data_setting()
     today = unixtime_to_readable(time.time())
@@ -726,4 +738,4 @@ def get_date_return_json(request):
     return JsonResponse(data)
 
 th1 = threading.Thread(target = set_data).start()
-# th2 = threading.Thread(target = backup_from_firebase).start()
+th2 = threading.Thread(target = backup_from_firebase).start()

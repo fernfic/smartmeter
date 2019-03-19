@@ -71,7 +71,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div id="predict_container" style="height: 400px; min-width: 310px"></div>
+                            <div id="predict_light" style="height: 400px; min-width: 310px"></div>
                         </div>
                     </div>
                 </div>
@@ -166,6 +166,10 @@
         });
         var e = JSON.parse('{{ energy | escapejs }}');
         var pred = JSON.parse('{{ pred | escapejs }}');
+        var ch1_name = "{{ meter.0.description }}";
+        var ch2_name = "{{ meter.1.description }}";
+        var ch3_name = "{{ meter.2.description }}";
+        var ch4_name = "{{ meter.3.description }}";
     </script>
     <script>
         var config = {
