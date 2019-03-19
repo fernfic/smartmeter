@@ -144,6 +144,7 @@ def del_history(request):
     
 def graph(request):
 	global watt_data, load_model, lp
+	_m = Meter.objects.all()
 	keep_app = []
 	p_pre = []
 	q_pre = []
@@ -157,7 +158,7 @@ def graph(request):
 	predictions1 = load_model.predict(X_test)
 	y_pd = convert_values(predictions1)
 	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)),
-		                                 "pred": json.dumps(y_pd.to_dict())})
+		                                 "pred": json.dumps(y_pd.to_dict()), "meter": _m})
 
 def convert_values(predictions1):
 	inverse_fn = lambda lbl: lp.inverse_transform(lbl)
