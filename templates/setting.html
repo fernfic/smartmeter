@@ -258,8 +258,12 @@
                $("#ip-form-edit").submit(); 
             });
             var bill = $("#dbill").text();
-            var unit = $("#munit").text();
             var live = $("#live").text();
+            if(live == "Home"){
+                var unit = 0;
+            }else{
+                var unit = $("#munit").text();
+            }
             $(".bill-cycle").click(function(){
                 
                 $("#bill").val(bill);
