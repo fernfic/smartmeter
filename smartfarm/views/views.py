@@ -235,7 +235,7 @@ def get_current_energy(request):
     # monthly_p2 = (p2_wh['month'][month] + cur_wh[1])/1000
     # monthly_p3 = (p3_wh['month'][month] + cur_wh[2])/1000
     # monthly_p4 = (p4_wh['month'][month] + cur_wh[3])/1000
-    print("monthly ", monthly_p1)
+    # print("monthly ", monthly_p1)
     bill_cost, bill_date =  get_cur_wh()
     data_cur = (bill_cost+cur_wh[0])/1000
     cost = calculate_cost_energy(data_cur)
@@ -348,7 +348,7 @@ def backup_from_firebase():
     ref = db.reference('energy')
     module_dir = os.path.dirname(__file__)  
     file_path = os.path.join(module_dir, '../../static/json/data_energy')
-    list_of_files = glob.glob(file_path+'/*') # * means all if need specific format then *.csv
+    list_of_files = sorted(glob.glob(file_path+'/*')) # * means all if need specific format then *.csv
     # print(list_of_files)
     if(len(list_of_files) > 0):
         all_file = []
@@ -498,7 +498,7 @@ def get_cur_wh():
     start = False
     sum_wh = 0
     bill_date = []
-    list_of_files = glob.glob(file_path+'*')
+    list_of_files = sorted(glob.glob(file_path+'*'))
     for files in list_of_files:
         _, s = os.path.split(files)
         date_time = os.path.splitext(s)[0]
@@ -515,7 +515,7 @@ def set_data():
     global p1_wh, p2_wh, p3_wh, p4_wh, watt_data
     module_dir = os.path.dirname(__file__)  
     file_path = os.path.join(module_dir, '../../static/json/data_energy/')
-    list_of_files = glob.glob(file_path+'*')
+    list_of_files = sorted(glob.glob(file_path+'*'))
     old_month = ''
     old_year = ''
     if(len(list_of_files) > 0):

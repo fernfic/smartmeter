@@ -44,7 +44,7 @@ def edit_bill(request):
     json_array = []
     module_dir = os.path.dirname(__file__)
     energy_path = os.path.join(module_dir, '../../static/json/data_energy/')
-    list_of_files = glob.glob(energy_path+'*')
+    list_of_files = sorted(glob.glob(energy_path+'*'))
     for files in list_of_files:
         _, s = os.path.split(files)
         date_time = os.path.splitext(s)[0]
