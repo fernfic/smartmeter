@@ -55,8 +55,12 @@ firebase_admin.initialize_app(cred, {
 module_dir = os.path.dirname(__file__)
 model_path = os.path.join(module_dir, '../../static/json/model.pkl')
 load_model = joblib.load(model_path)
-model_path2 = os.path.join(module_dir, '../../static/json/inverse.pkl')
-lp = joblib.load(model_path2)
+n_model_path = os.path.join(module_dir, '../../static/json/model2.pkl')
+load_model2 = joblib.load(n_model_path)
+inverse_path = os.path.join(module_dir, '../../static/json/inverse.pkl')
+inverse_path2 = os.path.join(module_dir, '../../static/json/inverse2.pkl')
+lp = joblib.load(inverse_path)
+lp2 = joblib.load(inverse_path2)
 
     
 def index(request):
@@ -156,12 +160,14 @@ def graph(request):
 		keep_app.append(int(dt.strftime('%H')))
 	X_test = pd.DataFrame({'time':keep_app,'P':p_pre,'Q':q_pre})
 	predictions1 = load_model.predict(X_test)
-	y_pd = convert_values(predictions1)
-	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)),
+	predictions2 = load_model2.predict(X_test)
+	y_pd = convert_values(predictions1, lp)
+	y_pd2 = convert_values(predictions2, lp2)
+	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)), "pred2":json.dumps(y_pd2.to_dict()),
 		                                 "pred": json.dumps(y_pd.to_dict()), "meter": _m})
 
-def convert_values(predictions1):
-	inverse_fn = lambda lbl: lp.inverse_transform(lbl)
+def convert_values(predictions1, lp_in):
+	inverse_fn = lambda lbl: lp_in.inverse_transform(lbl)
 	y_pred = inverse_fn(predictions1.flatten().astype(int)).toarray()
 	light_pd = pd.DataFrame({i:y_pred[:,i] for i in range(4)})
 	plug_pd = pd.DataFrame({i:y_pred[:,i+4] for i in range(4)})
@@ -214,7 +220,7 @@ def get_current_predict(request):
 	keep_app = [int(dt.strftime('%H'))]
 	X_test = pd.DataFrame({'time':keep_app,'P':p_pre,'Q':q_pre})
 	predictions1 = load_model.predict(X_test)
-	y_pd = convert_values(predictions1)
+	y_pd = convert_values(predictions1, lp)
 	data = y_pd.to_dict()
 	return JsonResponse(data)
 
@@ -739,4 +745,4 @@ def get_date_return_json(request):
     return JsonResponse(data)
 
 th1 = threading.Thread(target = set_data).start()
-th2 = threading.Thread(target = backup_from_firebase).start()
+# th2 = threading.Thread(target = backup_from_firebase).start()
