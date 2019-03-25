@@ -48,6 +48,97 @@ for(var i=0;i<e.length;i++){
 
     // pf1.push([time, e[i]["PF"]]);
 }
+Highcharts.stockChart('actual_main', {
+    chart: {
+        events: {
+            load: function () {
+                // set up the updating of the chart each second
+                var series1 = this.series[0];
+                // var series2 = this.series[1];
+                var ref = database.ref("energy");
+                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
+                    var changedData = snapshot.val();                        
+                    var x =  changedData.time*1000;
+                    var p1 =  changedData.P1;
+                    series1.addPoint([x, p1], false, true);
+                    // $.ajax({
+                    //     url: '/ajax/get_current_predict/',
+                    //     data: {
+                    //       'check': true
+                    //     },
+                    //     dataType: 'json',
+                    //     success: function (data) {
+                    //         if (data) {
+                    //             var p2_pre = data['light'][0]
+                    //             // alert(data);
+                    //             series2.addPoint([x, p2_pre], true, true);
+                    //         }
+                    //     }
+                    // });
+                })
+            }
+        }
+    },
+    title: {
+        text: 'Main'
+    },
+    time: {
+        useUTC: false
+    },
+    
+    rangeSelector: {
+        buttons: [{
+            count: 15,
+            type: 'minute',
+            text: '15M'
+        },{
+            count: 30,
+            type: 'minute',
+            text: '30M'
+        },{
+            type: 'all',
+            text: 'All'
+        }],
+        selected: 3,
+        inputEnabled: false, // ปิดเลือกวันที่
+    },
+    legend: {
+        enabled : true,
+        verticalAlign: 'top',
+        align : "right"
+    },
+    yAxis: {
+      title: {
+          text: "Active Power(P)"
+      },
+      labels: {
+          format: '{value}W'
+      },
+    },
+    tooltip: {
+        valueDecimals: 2,
+    },
+    credits: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    
+    navigator: {
+        enabled: true
+    },
+    
+    scrollbar: {
+        enabled: false
+    },
+    
+    series: [{
+        name: 'Actual',
+        data: (p1)
+    }]
+    });
+
 Highcharts.stockChart('predict_light', {
 chart: {
     events: {
