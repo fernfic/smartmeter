@@ -299,7 +299,6 @@ def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check
 
     print("real time start at "+str(int(time.time())))
     time_before = 0
-    print(len(time_data))
     day_before = ''
     count = 0
     while(True):
@@ -364,7 +363,7 @@ def backup_from_firebase():
             else:
                 all_file.append(int(time.mktime(datetime.strptime(new_date, "%d-%m-%Y").timetuple()))-25200+86400)
         latest_file = max(all_file)
-        print("last file="+str(unixtime_to_readable(latest_file)))
+        print("last="+str(unixtime_to_readable(latest_file)))
         start = latest_file
     else:
         start = 1549386000 # started at 06-02-2019
@@ -388,8 +387,6 @@ def backup_from_firebase():
 
     print("-----------------------------Complete--------------------------------------")
     print(datetime.now()-t_start)
-    print(time_data)
-    print(len(time_data))
     keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check30)
 
 def check_condition(val, time_value, keep_day, keep_hour, keep_minute, check30, d, wh, time_data):

@@ -79,7 +79,9 @@ chart: {
         }
     }
 },
-
+title: {
+    text: 'Light'
+},
 time: {
     useUTC: false
 },
@@ -140,3 +142,193 @@ series: [{
     data: (p2_pre)
 },]
 });
+
+Highcharts.stockChart('predict_air', {
+    chart: {
+        events: {
+            load: function () {
+                // set up the updating of the chart each second
+                var series1 = this.series[0];
+                var series2 = this.series[1];
+                var ref = database.ref("energy");
+                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
+                    var changedData = snapshot.val();                        
+                    var x =  changedData.time*1000;
+                    var p4 =  changedData.P4;
+                    series1.addPoint([x, p2], false, true);
+                    $.ajax({
+                        url: '/ajax/get_current_predict/',
+                        data: {
+                          'check': true
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data) {
+                                var p4_pre = data['air'][0]
+                                // alert(data);
+                                series2.addPoint([x, p4_pre], true, true);
+                            }
+                        }
+                    });
+                })
+            }
+        }
+    },
+    title: {
+        text: 'Air'
+    },
+    time: {
+        useUTC: false
+    },
+    
+    rangeSelector: {
+        buttons: [{
+            count: 15,
+            type: 'minute',
+            text: '15M'
+        },{
+            count: 30,
+            type: 'minute',
+            text: '30M'
+        },{
+            type: 'all',
+            text: 'All'
+        }],
+        selected: 3,
+        inputEnabled: false, // ปิดเลือกวันที่
+    },
+    legend: {
+        enabled : true,
+        verticalAlign: 'top',
+        align : "right"
+    },
+    yAxis: {
+      title: {
+          text: "Active Power(P)"
+      },
+      labels: {
+          format: '{value}W'
+      },
+    },
+    tooltip: {
+        valueDecimals: 2,
+    },
+    credits: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    
+    navigator: {
+        enabled: true
+    },
+    
+    scrollbar: {
+        enabled: false
+    },
+    
+    series: [{
+        name: 'Actual',
+        data: (p4)
+    },
+    {
+        name: 'Predict',
+        data: (p4_pre)
+    },]
+    });
+
+    Highcharts.stockChart('predict_plug', {
+        chart: {
+            events: {
+                load: function () {
+                    // set up the updating of the chart each second
+                    var series1 = this.series[0];
+                    var series2 = this.series[1];
+                    var ref = database.ref("energy");
+                    ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
+                        var changedData = snapshot.val();                        
+                        var x =  changedData.time*1000;
+                        var p3 =  changedData.P3;
+                        series1.addPoint([x, p3], false, true);
+                        $.ajax({
+                            url: '/ajax/get_current_predict/',
+                            data: {
+                              'check': true
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                if (data) {
+                                    var p3_pre = data['plug'][0]
+                                    // alert(data);
+                                    series2.addPoint([x, p3_pre], true, true);
+                                }
+                            }
+                        });
+                    })
+                }
+            }
+        },
+        title: {
+            text: 'Plug'
+        },
+        time: {
+            useUTC: false
+        },
+        
+        rangeSelector: {
+            buttons: [{
+                count: 15,
+                type: 'minute',
+                text: '15M'
+            },{
+                count: 30,
+                type: 'minute',
+                text: '30M'
+            },{
+                type: 'all',
+                text: 'All'
+            }],
+            selected: 3,
+            inputEnabled: false, // ปิดเลือกวันที่
+        },
+        legend: {
+            enabled : true,
+            verticalAlign: 'top',
+            align : "right"
+        },
+        yAxis: {
+          title: {
+              text: "Active Power(P)"
+          },
+          labels: {
+              format: '{value}W'
+          },
+        },
+        tooltip: {
+            valueDecimals: 2,
+        },
+        credits: {
+            enabled: false
+        },
+        exporting: {
+            enabled: false
+        },
+        
+        navigator: {
+            enabled: true
+        },
+        
+        scrollbar: {
+            enabled: false
+        },
+        
+        series: [{
+            name: 'Actual',
+            data: (p3)
+        },
+        {
+            name: 'Predict',
+            data: (p3_pre)
+        },]
+        });
