@@ -95,26 +95,244 @@ var chart_year = Highcharts.chart('container_kwh', {
             },
             cursor: 'pointer',
             point: {
-                    events: {
-                        click: function () {
-                            alert('Category: ' + this.category);
-                        }
+                events: {
+                    click: function () {
+                        alert('Category: ' + this.category);
                     }
                 }
+            },
+            // events: {
+            //     legendItemClick: function (event) {
+            //         var XYZ = $('#all').highcharts(),
+            //             series = XYZ.get(this.options.id); //get corresponding series
+
+            //         if (series) {
+            //             if (this.visible) {
+            //                 series.hide();
+            //             } else {
+            //                 series.show();
+            //             }
+            //         }
+            //     }
+            // }
         }
     },
     series: [{
+        id: 'ch1',
         name: ch1_name,
         data: p1_wh
     },{
+        id: 'ch2',
         name: ch2_name,
         data: p2_wh
     },{
+        id: 'ch3',
         name: ch3_name,
         data: p3_wh
     },{
+        id: 'ch4',
         name: ch4_name,
         data: p4_wh
+    }]
+});
+
+Highcharts.stockChart('all', {
+    title: {
+        text: 'All'
+    },
+    subtitle: {
+        text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
+    },  
+    time: {
+        useUTC: false
+    },
+
+    rangeSelector: {
+        buttonTheme: {
+            visibility: 'hidden'
+        },
+        labelStyle: {
+            visibility: 'hidden'
+        },
+        inputEnabled: false, // ปิดเลือกวันที่
+    },
+    legend: {
+        enabled : true,
+        verticalAlign: 'top',
+        align : "center"
+    },
+    yAxis: [{
+        labels: {
+            align: 'right',
+            x: -3,
+            format: '{value}W'
+        },
+        title: {
+            text: 'Active Power(P)'
+        },
+        height: '20%',
+        lineWidth: 2
+    }, {
+        labels: {
+            align: 'right',
+            x: -3,
+            format: '{value}VAR'
+        },
+        title: {
+            text: 'Reactive Power(Q)'
+        },
+        top: '25%',
+        height: '20%',
+        offset: 0,
+        lineWidth: 2
+    }, {
+        labels: {
+            align: 'right',
+            x: -3,
+            format: '{value}VA'
+        },
+        title: {
+            text: 'Apparent Power(S)'
+        },
+        top: '50%',
+        height: '20%',
+        offset: 0,
+        lineWidth: 2
+    }, {
+        labels: {
+            align: 'right',
+            x: -3,
+            format: '{value}A'
+        },
+        title: {
+            text: 'Current(I)'
+        },
+        top: '75%',
+        height: '20%',
+        offset: 0,
+        lineWidth: 2
+    }],
+
+    credits: {
+        enabled: false
+    },
+
+    exporting: {
+        enabled: false
+    },
+
+    navigator: {
+        enabled: true
+    },
+
+    scrollbar: {
+        enabled: false
+    },
+    tooltip: {
+        valueDecimals: 2,
+    },
+
+    series: [{
+        id:"ch1",
+        // colorIndex:0,
+        // linkedTo: "ch1",
+        name: ch1_name,
+        data: (p1)
+    },
+    {
+        id:"ch2",
+        // colorIndex:1,
+        // linkedTo: "ch2",
+        name: ch2_name,
+        data: (p2)
+    },
+    {
+        id:"ch3",
+        // colorIndex:2,
+        // linkedTo: "ch3",
+        name: ch3_name,
+        data: (p3)
+    },{
+        id:"ch4",
+        // colorIndex:3,
+        // linkedTo: "ch4",
+        name: ch4_name ,
+        data: (p4),
+    },{
+        colorIndex:0,
+        name: ch1_name,
+        linkedTo: "ch1",
+        data: (q1),
+        yAxis:1,
+    },{
+        colorIndex:1,
+        name: ch2_name,
+        linkedTo: "ch2",
+        data: (q2),
+        yAxis:1,
+    },
+    {
+        colorIndex:2,
+        name: ch3_name,
+        linkedTo: "ch3",
+        data: (q3),
+        yAxis:1,
+    },{
+        colorIndex:3,
+        name: ch4_name ,
+        linkedTo: "ch4",
+        data: (q4),
+        yAxis:1,
+    },{
+        colorIndex:0,
+        name: ch1_name,
+        linkedTo: "ch1",
+        data: (s1),
+        yAxis:2,
+    },{
+        colorIndex:1,
+        name: ch2_name,
+        linkedTo: "ch2",
+        data: (s2),
+        yAxis:2,
+    },
+    {
+        colorIndex:2,
+        name: ch3_name,
+        linkedTo: "ch3",
+        data: (s3),
+        yAxis:2,
+    },{
+        colorIndex:3,
+        name: ch4_name ,
+        linkedTo: "ch4",
+        data: (s4),
+        yAxis:2,
+    },{
+        colorIndex:0,
+        name: ch1_name,
+        linkedTo: "ch1",
+        data: (i1),
+        yAxis:3,
+    },{
+        colorIndex:1,
+        name: ch2_name,
+        linkedTo: "ch2",
+        data: (i2),
+        yAxis:3,
+    },
+    {
+        colorIndex:2,
+        name: ch3_name,
+        linkedTo: "ch3",
+        data: (i3),
+        yAxis:3,
+    },{
+        colorIndex:3,
+        name: ch4_name ,
+        linkedTo: "ch4",
+        data: (i4),
+        yAxis:3,
     }]
 });
 

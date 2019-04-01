@@ -244,7 +244,7 @@ Highcharts.stockChart('predict_air', {
                     var changedData = snapshot.val();                        
                     var x =  changedData.time*1000;
                     var p4 =  changedData.P4;
-                    series1.addPoint([x, p2], false, true);
+                    series1.addPoint([x, p4], false, true);
                     $.ajax({
                         url: '/ajax/get_current_predict/',
                         data: {
