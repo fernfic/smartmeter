@@ -53,14 +53,10 @@ firebase_admin.initialize_app(cred, {
     'databaseURL' : 'https://data-log-fb39d.firebaseio.com/'
 })
 module_dir = os.path.dirname(__file__)
-model_path = os.path.join(module_dir, '../../static/json/model.pkl')
+model_path = os.path.join(module_dir, '../../static/json/model3.pkl')
 load_model = joblib.load(model_path)
-n_model_path = os.path.join(module_dir, '../../static/json/model2.pkl')
-load_model2 = joblib.load(n_model_path)
-inverse_path = os.path.join(module_dir, '../../static/json/inverse.pkl')
-inverse_path2 = os.path.join(module_dir, '../../static/json/inverse2.pkl')
+inverse_path = os.path.join(module_dir, '../../static/json/inverse3.pkl')
 lp = joblib.load(inverse_path)
-lp2 = joblib.load(inverse_path2)
 
     
 def index(request):
@@ -160,10 +156,10 @@ def graph(request):
 		keep_app.append(int(dt.strftime('%H')))
 	X_test = pd.DataFrame({'time':keep_app,'P':p_pre,'Q':q_pre})
 	predictions1 = load_model.predict(X_test)
-	predictions2 = load_model2.predict(X_test)
+	# predictions2 = load_model2.predict(X_test)
 	y_pd = convert_values(predictions1, lp)
-	y_pd2 = convert_values(predictions2, lp2)
-	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)), "pred2":json.dumps(y_pd2.to_dict()),
+	# y_pd2 = convert_values(predictions2, lp2)
+	return render(request, "graph.html",{"energy": json.dumps(list(watt_data)), 
 		                                 "pred": json.dumps(y_pd.to_dict()), "meter": _m})
 
 def convert_values(predictions1, lp_in):

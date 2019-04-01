@@ -16,13 +16,11 @@ var s3 = [];
 var s4 = [];
 var pf1 = [];
 var p2_pre = [];
-var p2_pre2 = [];
 var p3_pre = [];
 var p4_pre = [];
 for(var i=0;i<e.length;i++){
     var time = e[i]["time"]*1000;
     p2_pre.push([time, pred["light"][i]]);
-    p2_pre2.push([time, pred2["light"][i]]);
     p3_pre.push([time, pred["plug"][i]]);
     p4_pre.push([time, pred["air"][i]]);
 
@@ -60,7 +58,7 @@ Highcharts.stockChart('actual_main', {
                     var changedData = snapshot.val();                        
                     var x =  changedData.time*1000;
                     var p1 =  changedData.P1;
-                    series1.addPoint([x, p1], false, true);
+                    series1.addPoint([x, p1], true, true);
                     // $.ajax({
                     //     url: '/ajax/get_current_predict/',
                     //     data: {
