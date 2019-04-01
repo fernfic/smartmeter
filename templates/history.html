@@ -65,6 +65,63 @@
                         <button type="button" id="button">Submit!</button> 
                     </div>
                 </div>
+
+                <div style="text-align:center">
+                    <h4 id="from_to_date">From {{ firstdate }} To {{ today }}</h4>
+                </div>
+                <div class="row" style="padding-top:5px">
+                    <div class="col-9">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="card card-hover">
+                                    <div class="box bg-dark text-center">
+                                        <h5 class="text-white">{{ meter.0.description }}</h5>
+                                        <h2 id="sum_p1_val" class="font-light text-white">{{ sum_p1_val }}</h2>
+                                        <h6 class="text-white">kWh</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card card-hover">
+                                    <div class="box bg-dark text-center">
+                                        <h5 class="text-white">{{ meter.1.description }}</h5>
+                                        <h2 id="sum_p2_val" class="font-light text-white">{{ sum_p2_val }}</h2>
+                                        <h6 class="text-white">kWh</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card card-hover">
+                                    <div class="box bg-dark text-center">
+                                        <h5 class="text-white">{{ meter.2.description }}</h5>
+                                        <h2 id="sum_p3_val" class="font-light text-white">{{ sum_p3_val }}</h2>
+                                        <h6 class="text-white">kWh</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="card card-hover">
+                                    <div class="box bg-dark text-center">
+                                        <h5 class="text-white">{{ meter.3.description }}</h5>
+                                        <h2 id="sum_p4_val" class="font-light text-white">{{ sum_p4_val }}</h2>
+                                        <h6 class="text-white">kWh</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                <div class="col-3">
+                    <div class="card card-hover">
+                        <div class="box bg-warning text-center">
+                            <h5>Charge</h5>
+                            <h2 id="cost_by_date">฿{{ cost7days }}</h2>
+                            <h6>Baht</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             </div>
             
             <!-- ============================================================== -->
@@ -73,7 +130,7 @@
             <!-- ============================================================== -->
             <!-- Container fluid  -->
             <!-- ============================================================== -->
-            <div class="container-fluid">
+            <div class="container-fluid" style="padding-top:0px">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -224,6 +281,7 @@
         var p2_wh = JSON.parse('{{ p2_val | escapejs }}');
         var p3_wh = JSON.parse('{{ p3_val | escapejs }}');
         var p4_wh = JSON.parse('{{ p4_val | escapejs }}');
+        var firstdate =  "{{ firstdate }}";
         var ch1_name = "{{ meter.0.description }}";
         var ch2_name = "{{ meter.1.description }}";
         var ch3_name = "{{ meter.2.description }}";
