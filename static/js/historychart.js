@@ -763,7 +763,7 @@ $("#button").click(function() {
                         text: 'All'
                     },
                     subtitle: {
-                        text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
+                        text: moment(start_date).format('DD/MM/YYYY')+' - '+moment(end_date).format('DD/MM/YYYY')
                     },  
                     time: {
                         useUTC: false
