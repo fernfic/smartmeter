@@ -128,7 +128,10 @@ chart: {
                 series3s.addPoint([x, s3], false, true);
                 series4s.addPoint([x, s4], true, true);
                 // alert("t")
-                
+                $('#ppm1').text(p1.toFixed(1));
+                $('#ppm2').text(p2.toFixed(1));
+                $('#ppm3').text(p3.toFixed(1));
+                $('#ppm4').text(p4.toFixed(1));
                 $.ajax({
                     url: '/ajax/get_current_energy/',
                     data: {
@@ -156,10 +159,6 @@ chart: {
                         $('#pv3').text(val_p3.toFixed(2));
                         $('#pv4').text(val_p4.toFixed(2));
                         
-                        $('#ppm1').text(val_pp1.toFixed(1));
-                        $('#ppm2').text(val_pp2.toFixed(1));
-                        $('#ppm3').text(val_pp3.toFixed(1));
-                        $('#ppm4').text(val_pp4.toFixed(1));
                         $('#cost_main').text("฿"+bill_cost.toFixed(2));
                       }
                     }
