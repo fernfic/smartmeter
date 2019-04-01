@@ -131,12 +131,28 @@ def history(request):
         p3_val.append(cur_wh[2]/1000)
         p4_val.append(cur_wh[3]/1000)
     data_7days = get_data_last_7days()
-    
+    today_d = datetime.strptime(today_s, '%Y-%m-%d')
+    today_new = today_d.strftime('%d/%m/%Y')
+    firstdate_d = datetime.strptime(column[0], '%Y-%m-%d')
+    firstdate_new = firstdate_d.strftime('%d/%m/%Y')
+
+    sum_p1_val = round(sum(p1_val),2)
+    sum_p2_val = round(sum(p2_val),2)
+    sum_p3_val = round(sum(p3_val),2)
+    sum_p4_val = round(sum(p4_val),2)
+    cost_7_days = calculate_cost_energy(sum_p1_val)
     return render(request,"history.html",{"d_col": json.dumps(column),"meter": _m,
                                           "p1_val": json.dumps(p1_val),
                                           "p2_val": json.dumps(p2_val),
                                           "p3_val": json.dumps(p3_val),
                                           "p4_val": json.dumps(p4_val),
+                                          "firstdate": firstdate_new,
+                                          "today":today_new,
+                                          "sum_p1_val": sum_p1_val,
+                                          "sum_p2_val": sum_p2_val,
+                                          "sum_p3_val": sum_p3_val,
+                                          "sum_p4_val": sum_p4_val,
+                                          "cost7days":cost_7_days,
                                           "data": json.dumps(data_7days)})
     
 def del_history(request):
@@ -730,7 +746,11 @@ def get_date_return_json(request):
             p2_val.append(cur_wh[1]/1000)
             p3_val.append(cur_wh[2]/1000)
             p4_val.append(cur_wh[3]/1000)
-        keep_data2 = {'p1_val':p1_val, 'p2_val':p2_val, 'p3_val':p3_val, 'p4_val':p4_val, 'd_col':column}
+        keep_data2 = {'p1_val':p1_val, 'p2_val':p2_val, 'p3_val':p3_val, 'p4_val':p4_val, 'd_col':column,
+                      'sum_p1_val':round(sum(p1_val),2), 'sum_p2_val':round(sum(p2_val),2),
+                      'sum_p3_val':round(sum(p3_val),2), 'sum_p4_val':round(sum(p4_val),2),
+                      'cost_by_date':calculate_cost_energy(round(sum(p1_val),2))
+                     }
         for k in keep_data2:
             data[k] = keep_data2[k]
     else:
@@ -738,4 +758,4 @@ def get_date_return_json(request):
     return JsonResponse(data)
 
 th1 = threading.Thread(target = set_data).start()
-# th2 = threading.Thread(target = backup_from_firebase).start()
+th2 = threading.Thread(target = backup_from_firebase).start()
