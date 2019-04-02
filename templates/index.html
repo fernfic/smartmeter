@@ -175,7 +175,7 @@
                         </div>
                     </div>
                     <div class="col-lg-2">
-                        <div class="rowz">
+                        <div class="row">
                             <div class="col-12">
                                 <div class="p-10 text-center">
                                     <h5 class="m-b-0">Daily</h5>
@@ -294,8 +294,8 @@
     
     <script>
     var currentDate = new Date();
-    var day = ("0" + currentDate.getDate()).slice(-2)
-    var month = ("0" + (currentDate.getMonth() + 1)).slice(-2)
+    var day = currentDate.getDate();
+    var month = currentDate.getMonth() + 1;
     var year = currentDate.getFullYear();
     $('#daynow').html(day+'/'+month+'/'+year);
     var bill_cost = "{{ bill_cost }}";

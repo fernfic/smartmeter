@@ -620,7 +620,6 @@ $("#button").click(function() {
     var get_all_date = getDates(start_date, end_date);
     console.log(get_all_date)
     $.ajax({
-        type:"POST",
         url: '/ajax/get_date_return_json/',
         data: {all_date : JSON.stringify(get_all_date)},
         dataType: 'json',

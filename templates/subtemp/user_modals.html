@@ -12,10 +12,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
-                <form action="/logout/" method="POST">
+                <!-- <form action="/accounts/logout/" method="POST"> -->
+                <a href="{% url 'logout' %}">
                     <input type="submit" id="submit-logout" class="btn btn-success" value="ตกลง">
                     {% csrf_token %}
-                </form>
+                </a>
+                <!-- </form> -->
             </div>
         </div>
     </div>

@@ -44,7 +44,6 @@ for(var i=0;i<e.length;i++){
     s3.push([time, e[i]["S3"]]);
     s4.push([time, e[i]["S4"]]);
 
-    // pf1.push([time, e[i]["PF"]]);
 }
 Highcharts.stockChart('actual_main', {
     chart: {
@@ -59,20 +58,6 @@ Highcharts.stockChart('actual_main', {
                     var x =  changedData.time*1000;
                     var p1 =  changedData.P1;
                     series1.addPoint([x, p1], true, true);
-                    // $.ajax({
-                    //     url: '/ajax/get_current_predict/',
-                    //     data: {
-                    //       'check': true
-                    //     },
-                    //     dataType: 'json',
-                    //     success: function (data) {
-                    //         if (data) {
-                    //             var p2_pre = data['light'][0]
-                    //             // alert(data);
-                    //             series2.addPoint([x, p2_pre], true, true);
-                    //         }
-                    //     }
-                    // });
                 })
             }
         }
