@@ -1,10 +1,8 @@
 {% extends 'base2.html' %}
 
-{% load crispy_forms_tags %}
-
 {% block content %}
 <h2>Change Email</h2>
-<form class="form-horizontal m-t-20" id="loginform" method="POST" action="update_email/">
+<form class="form-horizontal m-t-20" method="POST">
     <div class="row p-b-30">
         <div class="col-12">
             <div class="input-group mb-3">
@@ -21,8 +19,8 @@
             </div>
         </div>
     </div>
-    {% if form.errors %}
-        <font color="red">* password not correct. Please try again.</font>
+    {% if message %}
+        <font color="red">{{ message }}</font>
     {% endif %}
     <div class="row border-top border-secondary">
         <div class="col-12">

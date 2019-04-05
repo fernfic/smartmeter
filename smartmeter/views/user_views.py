@@ -35,21 +35,25 @@ def logout(request):
 
 @login_required
 def change_email(request):
+    if request.method == "POST":
+        user = User.objects.get(pk=1) # get first user 
+        print(user.username)
+        pwd = request.POST.get("password")  # get password 
+        new_email = request.POST.get("new_email")   # get new email
+        user_validated = user.check_password(pwd)   # validate user and password
+        print(user_validated)
+        if user_validated:  
+            user.email = new_email
+            print(user.email)
+            user.save()
+            return redirect("/accounts/change_email/done")
+        else:
+            msg = "* Password not correct. Please try again."
+            return render(request, "registration/email_change_form.html",{'message':msg})  
+
     return render(request, "registration/email_change_form.html")
 
-def update_email(request):
-    user = User.objects.get(pk=1) # get first user 
-    print(user.username)
-    pwd = request.POST.get("password")  # get password 
-    new_email = request.POST.get("new_email")   # get new email
-    user_validated = user.check_password(pwd)   # validate user and password
-    print(user_validated)
-    if user_validated:  
-        user.email = new_email
-        print(user.email)
-        user.save()
-        return redirect("/")
-    else:
-        return redirect("/accounts/change_email")
+def change_email_done(request):
+    return render(request, "registration/email_change_done.html")
 
     
