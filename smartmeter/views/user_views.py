@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 # from ..models import User
 # from ..post_data import parse_keys
 import firebase_admin
@@ -35,6 +36,10 @@ def logout(request):
         return redirect("/signin/")
     else:
         return redirect("/")
+
+@login_required
+def change_email(request):
+    return render(request, "registration/email_change_form.html")
     
 def signin(request):
     if request.method == "POST":
@@ -88,16 +93,16 @@ def change_password(request):
             "status": False,
         }))
         
-def change_email(request):
-    admin = User.objects.get(pk=1)
-    pwd = request.POST.get("pass")
-    email = request.POST.get("email")
-    change_success = admin._change_email(pwd, email)
-    if change_success:
-        return HttpResponse(json.dumps({
-            "status": True,
-        }))
-    else:
-        return HttpResponse(json.dumps({
-            "status": False,
-        }))
+# def change_email(request):
+#     admin = User.objects.get(pk=1)
+#     pwd = request.POST.get("pass")
+#     email = request.POST.get("email")
+#     change_success = admin._change_email(pwd, email)
+#     if change_success:
+#         return HttpResponse(json.dumps({
+#             "status": True,
+#         }))
+#     else:
+#         return HttpResponse(json.dumps({
+#             "status": False,
+#         }))
