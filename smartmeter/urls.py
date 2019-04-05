@@ -18,6 +18,8 @@ urlpatterns = [
     url(r'^setting/', views.setting),
     url(r'^graph/', views.graph),
     url(r'^history/', views.history),
+
+    # ajax views
     url(r'^ajax/get_current_energy/$', views.get_current_energy),
     url(r'^ajax/get_current_predict/$', views.get_current_predict),
     url(r'^ajax/get_date_return_json/$', views.get_date_return_json),
