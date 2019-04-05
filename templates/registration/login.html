@@ -20,6 +20,9 @@
             </div>
         </div>
     </div>
+    {% if form.errors %}
+        <font color="white">Username or password not correct. Please try again.</font>
+    {% endif %}
     <div class="row border-top border-secondary">
         <div class="col-12">
             <div class="form-group">
@@ -31,7 +34,6 @@
         </div>
     </div>
     {% csrf_token %}
-    <font color="white">{{ message }}</font>
 </form>
 <form name="send-email" id="send-email" action="/signin/" method="POST">
     <input type="hidden" name="send-mail" value="yes">

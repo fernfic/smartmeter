@@ -6,7 +6,7 @@ from .views import views, user_views, setting_views
 
 urlpatterns = [
 
-    path('signup/', views.signup, name='signup'),
+    # path('signup/', views.signup, name='signup'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('', views.index, name='home'),
     path('logout/', auth_views.LogoutView.as_view(next_page='index.html'), name='logout'),

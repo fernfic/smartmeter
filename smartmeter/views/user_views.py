@@ -18,13 +18,6 @@ import numpy as np
 
 tz = pytz.timezone('Asia/Bangkok')
 database_types = ['X', 'A', 'B', 'C']
-
-# def send_pwd_mail(request):
-    
-    
-def make_login(request):
-    request.session["user"] = "hello"
-    return HttpResponse("login completed")
     
 def logout(request):
     if request.method == "POST":
