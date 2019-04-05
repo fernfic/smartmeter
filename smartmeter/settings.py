@@ -34,6 +34,13 @@ EMAIL_HOST_USER = 'sansara.farm.10@gmail.com'
 EMAIL_HOST_PASSWORD = 'sansara@salawin'
 EMAIL_PORT = 587
 
+# EMAIL_HOST = ''
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'Epicups Team <admin@epicups.com>'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -132,5 +139,5 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGOUT_REDIRECT_URL = 'home'
