@@ -5,7 +5,6 @@ from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -64,19 +63,6 @@ model_path = os.path.join(module_dir, '../../static/json/model.pkl')
 load_model = joblib.load(model_path)
 inverse_path = os.path.join(module_dir, '../../static/json/inverse.pkl')
 lp = joblib.load(inverse_path)
-
-def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            print(form)
-            form.save()
-            return redirect('home')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/signup.html', {
-        'form': form
-})
 
 @login_required
 def index(request):
