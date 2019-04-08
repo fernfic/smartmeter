@@ -165,7 +165,7 @@ rangeSelector: {
 legend: {
     enabled : true,
     verticalAlign: 'top',
-    align : "right"
+    align : "center"
 },
 yAxis: {
   title: {
@@ -252,7 +252,7 @@ Highcharts.stockChart('predict_air', {
     legend: {
         enabled : true,
         verticalAlign: 'top',
-        align : "right"
+        align : "center"
     },
     yAxis: {
       title: {
@@ -340,7 +340,7 @@ Highcharts.stockChart('predict_plug', {
     legend: {
         enabled : true,
         verticalAlign: 'top',
-        align : "right"
+        align : "center"
     },
     yAxis: {
       title: {
