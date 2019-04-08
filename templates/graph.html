@@ -58,61 +58,10 @@
              <div class="page-breadcrumb">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h4 class="page-title">Graph</h4>  
+                        <h4 class="page-title">Load Sharing Prediction</h4>  
                     </div>
                 </div>  
-                <div class="row" style="padding-top:5px">
-                    <div class="col-9">
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="card card-hover">
-                                    <div class="box bg-dark text-center">
-                                        <h5 class="text-white">{{ meter.0.description }}</h5>
-                                        <h2 id="sum_p1_val" class="font-light text-white">{{ sum_p1_val }}</h2>
-                                        <h6 class="text-white">kWh</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="card card-hover">
-                                    <div class="box bg-dark text-center">
-                                        <h5 class="text-white">{{ meter.1.description }}</h5>
-                                        <h2 id="sum_p2_val" class="font-light text-white">{{ sum_p2_val }}</h2>
-                                        <h6 class="text-white">kWh</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="card card-hover">
-                                    <div class="box bg-dark text-center">
-                                        <h5 class="text-white">{{ meter.2.description }}</h5>
-                                        <h2 id="sum_p3_val" class="font-light text-white">{{ sum_p3_val }}</h2>
-                                        <h6 class="text-white">kWh</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-3">
-                                <div class="card card-hover">
-                                    <div class="box bg-dark text-center">
-                                        <h5 class="text-white">{{ meter.3.description }}</h5>
-                                        <h2 id="sum_p4_val" class="font-light text-white">{{ sum_p4_val }}</h2>
-                                        <h6 class="text-white">kWh</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <div class="col-3">
-                        <div class="card card-hover">
-                            <div class="box bg-warning text-center">
-                                <h5>Charge</h5>
-                                <h2 id="cost_by_date">฿{{ cost7days }}</h2>
-                                <h6>Baht</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>          
+                          
             </div>
             <!-- ============================================================== -->
             <!-- End Bread crumb and right sidebar toggle -->
@@ -125,17 +74,69 @@
                     <div class="col-12">
                         <div class="card">
                             <ul class="nav nav-tabs" role="tablist">
-                                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#tab1" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Real-time</span></a></li>
-                                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab2" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Select-time</span></a></li>
+                                <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#tab1" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Real-time Prediction</span></a></li>
+                                <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tab2" role="tab"><span class="hidden-sm-up"></span> <span class="hidden-xs-down">Select-time Prediction</span></a></li>
                             </ul>
                             <!-- Tab panes -->
                             <div class="tab-content tabcontent-border">
                                 <div class="tab-pane active" id="tab1" role="tabpanel">
+                                	<div class="row" style="padding-top:20px">
+					                    <div class="col-12">
+					                        <div class="row">
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-warning text-center">
+					                                        <h5>{{ meter.0.description }}</h5>
+					                                        <h2 id="ppm1">0</h2>
+					                                        <h6>kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-dark text-center">
+					                                        <h5 class="text-white">Predict {{ meter.1.description }}</h5>
+					                                        <h2 id="ppm2" class="font-light text-white">0</h2>
+					                                        <h6 class="text-white">kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-dark text-center">
+					                                        <h5 class="text-white">Predict {{ meter.2.description }}</h5>
+					                                        <h2 id="ppm3" class="font-light text-white">0</h2>
+					                                        <h6 class="text-white">kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-dark text-center">
+					                                        <h5 class="text-white">Predict {{ meter.3.description }}</h5>
+					                                        <h2 id="ppm4" class="font-light text-white">0</h2>
+					                                        <h6 class="text-white">kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                        </div>
+					                    </div>
+					                
+					                    <!-- <div class="col-3">
+					                        <div class="card card-hover">
+					                            <div class="box bg-warning text-center">
+					                                <h5>Charge</h5>
+					                                <h2 id="cost_by_date">฿{{ cost7days }}</h2>
+					                                <h6>Baht</h6>
+					                            </div>
+					                        </div>
+					                    </div> -->
+					                </div>
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="actual_main" style="height: 300px;"></div>
+                                                    <div id="actual_main" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
@@ -163,7 +164,7 @@
                                     </div>
                                 </div>
                                 <div class="tab-pane active" id="tab2" role="tabpanel">
-                                	<div class="float-right">
+                                	<div class="float-right" style="padding-top:20px">
 					                    <input type="text" id="datepickerka2" name="datefilter" value="Select Date" style="width:180px" />
 					                    <button type="button" id="button">Submit!</button> 
 					                </div>
@@ -270,6 +271,8 @@
         var ch2_name = "{{ meter.1.description }}";
         var ch3_name = "{{ meter.2.description }}";
         var ch4_name = "{{ meter.3.description }}";
+        var now_p = JSON.parse('{{ now_p | escapejs }}');
+        var bill_cost = "{{ bill_cost }}";
     </script>
     <script>
         var config = {

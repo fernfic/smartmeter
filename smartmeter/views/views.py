@@ -175,10 +175,16 @@ def graph(request):
         keep_app.append(int(dt.strftime('%H')))
     X_test = pd.DataFrame({'time':keep_app,'P':p_pre,'Q':q_pre})
     predictions1 = load_model.predict(X_test)
-    y_pd = convert_values(predictions1, lp)
+    y_pd = convert_values(predictions1, lp).to_dict()
+    now_p1 = watt_data[-1]['P1']
+    now_p2 = y_pd["light"][len(y_pd['light'])-1]
+    now_p3 = y_pd["plug"][len(y_pd['plug'])-1]
+    now_p4 = y_pd["air"][len(y_pd['air'])-1]
+    now_p = [now_p1, now_p2, now_p3, now_p4]
     # print(watt_data)
     return render(request, "graph.html",{"energy": json.dumps(list(watt_data)), 
-                                         "pred": json.dumps(y_pd.to_dict()), "meter": _m})
+    									 "now_p": json.dumps(now_p),
+                                         "pred": json.dumps(y_pd), "meter": _m})
 
 def convert_values(predictions1, lp_in):
     inverse_fn = lambda lbl: lp_in.inverse_transform(lbl)

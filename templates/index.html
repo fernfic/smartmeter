@@ -148,7 +148,7 @@
                                         <div class="col-12">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="activePow1" style="height: 300px;"></div>
+                                                    <div id="activePow1" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
@@ -180,7 +180,7 @@
                                         <div class="col-12">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="reactivePow1" style="height: 300px;"></div>
+                                                    <div id="reactivePow1" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
@@ -212,7 +212,7 @@
                                         <div class="col-12">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="apparentPow1" style="height: 300px;"></div>
+                                                    <div id="apparentPow1" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
@@ -244,7 +244,7 @@
                                         <div class="col-12">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="current1" style="height: 300px;"></div>
+                                                    <div id="current1" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
@@ -410,13 +410,6 @@
     var ch4_name = "{{ meter.3.description }}";
     var unit = "{{ unit }}";
     $(document).ready(function() {
-        $('.datepicker').datepicker({
-            format: 'dd/mm/yyyy',
-            todayHighlight: true,
-            todayBtn: false,
-            language: 'th', 
-            thaiyear: true              
-        }).datepicker("setDate", "0"); 
         var interval = setInterval(function() {
             var currentDate = new Date();
             if(currentDate.getDate() != day){

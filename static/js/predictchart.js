@@ -45,6 +45,17 @@ for(var i=0;i<e.length;i++){
     s4.push([time, e[i]["S4"]]);
 
 }
+var val_pp1 = now_p[0];
+var val_pp2 = now_p[1];
+var val_pp3 = now_p[2];
+var val_pp4 = now_p[3];
+var bill_cost = bill_cost;
+$('#ppm1').text(val_pp1.toFixed(1));
+$('#ppm2').text(val_pp2.toFixed(1));
+$('#ppm3').text(val_pp3.toFixed(1));
+$('#ppm4').text(val_pp4.toFixed(1));
+$('#cost_main').text("฿"+parseFloat(bill_cost).toFixed(2));
+
 Highcharts.stockChart('actual_main', {
     chart: {
         events: {
@@ -58,6 +69,8 @@ Highcharts.stockChart('actual_main', {
                     var x =  changedData.time*1000;
                     var p1 =  changedData.P1;
                     series1.addPoint([x, p1], true, true);
+
+                    $('#ppm1').text(p1.toFixed(1));
                 })
             }
         }
@@ -79,7 +92,7 @@ Highcharts.stockChart('actual_main', {
         inputEnabled: false, // ปิดเลือกวันที่
     },
     legend: {
-        enabled : true,
+        enabled : false,
         verticalAlign: 'top',
         align : "right"
     },
@@ -128,6 +141,7 @@ chart: {
                 var x =  changedData.time*1000;
                 var p2 =  changedData.P2;
                 series1.addPoint([x, p2], false, true);
+
                 $.ajax({
                     url: '/ajax/get_current_predict/',
                     data: {
@@ -139,6 +153,7 @@ chart: {
                             var p2_pre = data['light'][0]
                             // alert(data);
                             series2.addPoint([x, p2_pre], true, true);
+                            $('#ppm2').text(p2_pre.toFixed(1));
                         }
                     }
                 });
@@ -227,6 +242,7 @@ Highcharts.stockChart('predict_air', {
                                 var p4_pre = data['air'][0]
                                 // alert(data);
                                 series2.addPoint([x, p4_pre], true, true);
+                                $('#ppm4').text(p4_pre.toFixed(1));
                             }
                         }
                     });
@@ -314,6 +330,7 @@ Highcharts.stockChart('predict_plug', {
                                 var p3_pre = data['plug'][0]
                                 // alert(data);
                                 series2.addPoint([x, p3_pre], true, true);
+                                $('#ppm3').text(p3_pre.toFixed(1));
                             }
                         }
                     });
