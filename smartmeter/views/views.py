@@ -37,6 +37,7 @@ urllib3.disable_warnings()
 pee_ja = 20
 time_data, p1, p2, p3, p4, q1, q2, q3, q4, s1, s2, s3, s4, i1, i2, i3, i4, pf1 = ([] for i in range(18))
 p1_wh, p2_wh, p3_wh, p4_wh = ({'day':{},'month':{}, 'year':{}} for i in range(4))
+p2_pre_wh, p3_pre_wh, p4_pre_wh = ({'day':{}} for i in range(3))
 cur_d1m, cur_d1hr, cur_d30m = (pd.DataFrame() for i in range(3))
 cur_wh = [0, 0, 0, 0]
 watt_data = deque([])
@@ -134,7 +135,7 @@ def history(request):
         p2_val.append(cur_wh[1]/1000)
         p3_val.append(cur_wh[2]/1000)
         p4_val.append(cur_wh[3]/1000)
-    data_7days = get_data_last_7days()
+    data_7days = get_data_last_7days()[0]
     today_d = datetime.strptime(today_s, '%Y-%m-%d')
     today_new = today_d.strftime('%d/%m/%Y')
     firstdate_d = datetime.strptime(column[0], '%Y-%m-%d')
@@ -162,8 +163,37 @@ def history(request):
 
 @login_required    
 def graph(request):
-    global watt_data, load_model, lp
+    global watt_data, load_model, lp, p1_wh, p2_pre_wh, p3_pre_wh, p4_pre_wh, cur_wh, cur_d1m
     _m = Meter.objects.all()
+    column = []
+    p1_val, p2_val, p3_val, p4_val = [[] for i in range(4)]
+    for k in p1_wh['day']:
+        column.append(k)
+    column = sorted(column)[-6:]
+    for c in column:
+        p1_val.append(p1_wh['day'][c]/1000)
+        p2_val.append(p2_pre_wh['day'][c]/1000)
+        p3_val.append(p3_pre_wh['day'][c]/1000)
+        p4_val.append(p4_pre_wh['day'][c]/1000)
+
+    today = unixtime_to_readable(time.time())
+    today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
+    if today_s not in column and len(cur_d1m) != 0:
+        column.append(today_s)
+        X_test = pd.DataFrame({'time':cur_d1m['time'],'P':cur_d1m['p1'],'Q':cur_d1m['q1']})
+        predictions1 = load_model.predict(X_test)
+        y_pd = convert_values(predictions1, lp).to_dict()
+        p1_val.append(cur_wh[0]/1000)
+        p2_val.append(sum(y_pd['ap1'].values())/1000)
+        p3_val.append(sum(y_pd['ap2'].values())/1000)
+        p4_val.append(sum(y_pd['ap3'].values())/1000)
+    firstdate_d = datetime.strptime(column[0], '%Y-%m-%d')
+    firstdate_new = firstdate_d.strftime('%d/%m/%Y')
+    data_7days = get_data_last_7days()[0]
+    data_7days_pre = get_data_last_7days()[1]
+    today_d = datetime.strptime(today_s, '%Y-%m-%d')
+    today_new = today_d.strftime('%d/%m/%Y')
+
     keep_app = []
     p_pre = []
     q_pre = []
@@ -177,25 +207,34 @@ def graph(request):
     predictions1 = load_model.predict(X_test)
     y_pd = convert_values(predictions1, lp).to_dict()
     now_p1 = watt_data[-1]['P1']
-    now_p2 = y_pd["light"][len(y_pd['light'])-1]
-    now_p3 = y_pd["plug"][len(y_pd['plug'])-1]
-    now_p4 = y_pd["air"][len(y_pd['air'])-1]
+    now_p2 = y_pd["ap1"][len(y_pd['ap1'])-1]
+    now_p3 = y_pd["ap2"][len(y_pd['ap2'])-1]
+    now_p4 = y_pd["ap3"][len(y_pd['ap3'])-1]
     now_p = [now_p1, now_p2, now_p3, now_p4]
     # print(watt_data)
     return render(request, "graph.html",{"energy": json.dumps(list(watt_data)), 
     									 "now_p": json.dumps(now_p),
+    									 "d_col": json.dumps(column),
+    									 "p1_val": json.dumps(p1_val),
+                                         "p2_val": json.dumps(p2_val),
+                                         "p3_val": json.dumps(p3_val),
+                                         "p4_val": json.dumps(p4_val),
+                                         "today":today_new,
+                                         "firstdate": firstdate_new,
+                                         "data": json.dumps(data_7days),
+                                         "data_pre": json.dumps(data_7days_pre),
                                          "pred": json.dumps(y_pd), "meter": _m})
 
 def convert_values(predictions1, lp_in):
     inverse_fn = lambda lbl: lp_in.inverse_transform(lbl)
     y_pred = inverse_fn(predictions1.flatten().astype(int)).toarray()
-    light_pd = pd.DataFrame({i:y_pred[:,i] for i in range(4)})
-    plug_pd = pd.DataFrame({i:y_pred[:,i+4] for i in range(4)})
-    air_pd = pd.DataFrame({i:y_pred[:,i+8] for i in range(4)})
+    ap1_pd = pd.DataFrame({i:y_pred[:,i] for i in range(4)})
+    ap2_pd = pd.DataFrame({i:y_pred[:,i+4] for i in range(4)})
+    ap3_pd = pd.DataFrame({i:y_pred[:,i+8] for i in range(4)})
     y_pred_ev = pd.DataFrame({})
-    y_pred_ev['light'] = list(pd.Series(light_pd.columns[np.where(light_pd==1)[1]]))
-    y_pred_ev['plug'] = list(pd.Series(plug_pd.columns[np.where(plug_pd==1)[1]]))
-    y_pred_ev['air'] = list(pd.Series(air_pd.columns[np.where(air_pd==1)[1]]))
+    y_pred_ev['ap1'] = list(pd.Series(ap1_pd.columns[np.where(ap1_pd==1)[1]]))
+    y_pred_ev['ap2'] = list(pd.Series(ap2_pd.columns[np.where(ap2_pd==1)[1]]))
+    y_pred_ev['ap3'] = list(pd.Series(ap3_pd.columns[np.where(ap3_pd==1)[1]]))
     k_mean = list([[2.15210285e+00, 8.52438422e+00, 3.83718099e-02],
         [9.24644536e+01, 1.00098512e+02, 5.70881799e-01],
         [1.25115337e+02, 1.31406327e+02, 7.60770557e-01],
@@ -523,7 +562,7 @@ def get_cur_wh():
     return sum_wh, bill_date
 
 def set_data():
-    global p1_wh, p2_wh, p3_wh, p4_wh, watt_data
+    global p1_wh, p2_wh, p3_wh, p4_wh, watt_data, p2_pre_wh, p3_pre_wh, p4_pre_wh
     module_dir = os.path.dirname(__file__)  
     file_path = os.path.join(module_dir, '../../static/json/data_energy/')
     list_of_files = sorted(glob.glob(file_path+'*'))
@@ -562,6 +601,14 @@ def set_data():
                 p3_wh['year'][new_year] += data['sum_p3']
                 p4_wh['year'][new_year] += data['sum_p4']
 
+                # predict
+                X_test = pd.DataFrame({'time':data['1m']['time'],'P':data['1m']['p1'],'Q':data['1m']['q1']})
+                predictions1 = load_model.predict(X_test)
+                y_pd = convert_values(predictions1, lp).to_dict()
+                p2_pre_wh['day'][new_day] = sum(y_pd['ap1'].values())
+                p3_pre_wh['day'][new_day] = sum(y_pd['ap2'].values())
+                p4_pre_wh['day'][new_day] = sum(y_pd['ap3'].values())
+                
     ref = db.reference('energy')
     result = ref.order_by_child('time').limit_to_last(500).get() # 30 mins
     value_array = list(result.values())
@@ -678,9 +725,15 @@ def get_data_last_7days():
             list_val.append(keep_dict[column])
         keep_data = keep_data.append(pd.DataFrame([list_val], columns=list_column), ignore_index=True)
     data = {}
+    data_pre = {}
     for column in list_column:
         data[column] = list(keep_data[column])
-    return data
+
+    X_test = pd.DataFrame({'time':data['time'][0],'P':data['p1'][0],'Q':data['q1'][0]})
+    predictions1 = load_model.predict(X_test)
+    y_pd = convert_values(predictions1, lp).to_dict()
+
+    return [data, y_pd]
         
 @csrf_protect
 def get_date_return_json(request):
@@ -729,6 +782,12 @@ def get_date_return_json(request):
         data = {}
         for column in list_column:
             data[column] = list(keep_data[column])  
+        X_test = pd.DataFrame({'time':data['time'][0],'P':data['p1'][0],'Q':data['q1'][0]})
+        predictions1 = load_model.predict(X_test)
+        y_pd = convert_values(predictions1, lp).to_dict()
+        data['pre_ap1'] = list(y_pd['ap1'].values())
+        data['pre_ap2'] = list(y_pd['ap2'].values())
+        data['pre_ap3'] = list(y_pd['ap3'].values())
 
         column = []
         _m = Meter.objects.all()
@@ -755,6 +814,7 @@ def get_date_return_json(request):
                      }
         for k in keep_data2:
             data[k] = keep_data2[k]
+        
     else:
         print(request)
     return JsonResponse(data)

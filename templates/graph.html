@@ -80,7 +80,7 @@
                             <!-- Tab panes -->
                             <div class="tab-content tabcontent-border">
                                 <div class="tab-pane active" id="tab1" role="tabpanel">
-                                	<div class="row" style="padding-top:20px">
+                                	<div class="row" style="padding-top:20px; margin:0">
 					                    <div class="col-12">
 					                        <div class="row">
 					                            <div class="col-3">
@@ -121,16 +121,6 @@
 					                            </div>
 					                        </div>
 					                    </div>
-					                
-					                    <!-- <div class="col-3">
-					                        <div class="card card-hover">
-					                            <div class="box bg-warning text-center">
-					                                <h5>Charge</h5>
-					                                <h2 id="cost_by_date">฿{{ cost7days }}</h2>
-					                                <h6>Baht</h6>
-					                            </div>
-					                        </div>
-					                    </div> -->
 					                </div>
                                     <div class="row">
                                         <div class="col-12">
@@ -143,36 +133,99 @@
                                         <div class="col-4">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="predict_light" style="height: 280px;"></div>
+                                                    <div id="predict_ap1" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="predict_plug" style="height: 280px;"></div>
+                                                    <div id="predict_ap2" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div class="box bg-white text-center">
                                                 <h1 class="font-light text-white">
-                                                    <div id="predict_air" style="height: 280px;"></div>
+                                                    <div id="predict_ap3" style="height: 280px;"></div>
                                                 </h1>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="tab-pane active" id="tab2" role="tabpanel">
-                                	<div class="float-right" style="padding-top:20px">
+                                	<div class="float-right" style="padding:20px">
 					                    <input type="text" id="datepickerka2" name="datefilter" value="Select Date" style="width:180px" />
 					                    <button type="button" id="button">Submit!</button> 
 					                </div>
-                                    <div class="box bg-white text-center">
-                                        <h1 class="font-light text-white">
-                            	
-                                            <!-- <div id="container_p" style="height: 400px; min-width: 310px"></div> -->
-                                        </h1>
+					                <!-- <div class="row" style="width:100%; margin:0">
+					                    <div class="col-12">
+					                        <div class="row">
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-warning text-center">
+					                                        <h5>{{ meter.0.description }}</h5>
+					                                        <h2 id="sum_p1_val">0</h2>
+					                                        <h6>kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-dark text-center">
+					                                        <h5 class="text-white">Predict {{ meter.1.description }}</h5>
+					                                        <h2 id="sum_p2_val" class="font-light text-white">0</h2>
+					                                        <h6 class="text-white">kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-dark text-center">
+					                                        <h5 class="text-white">Predict {{ meter.2.description }}</h5>
+					                                        <h2 id="sum_p3_val" class="font-light text-white">0</h2>
+					                                        <h6 class="text-white">kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                            <div class="col-3">
+					                                <div class="card card-hover">
+					                                    <div class="box bg-dark text-center">
+					                                        <h5 class="text-white">Predict {{ meter.3.description }}</h5>
+					                                        <h2 id="sum_p4_val" class="font-light text-white">0</h2>
+					                                        <h6 class="text-white">kWh</h6>
+					                                    </div>
+					                                </div>
+					                            </div>
+					                        </div>
+					                    </div>
+					                </div> -->
+                                    <div class="row" style="width:100%; margin:0">
+                                        <!-- <div class="col-12">
+                                            <div class="card">
+					                            <div id="container_kwh_pre" style="height: 380px; min-width: 310px"></div>
+					                        </div>
+                                        </div> -->
+                                        <div class="col-12">
+                                            <div class="card">
+					                            <div id="main_select" style="height: 380px; min-width: 310px"></div>
+					                        </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="card">
+					                            <div id="ap1_predict_select" style="height: 380px; min-width: 310px"></div>
+					                        </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="card">
+					                            <div id="ap2_predict_select" style="height: 380px; min-width: 310px"></div>
+					                        </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="card">
+					                            <div id="ap3_predict_select" style="height: 380px; min-width: 310px"></div>
+					                        </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -264,6 +317,7 @@
     <script>
         $(document).ready(function () {
             document.getElementById("tab2").classList.remove('active');
+            
         });
         var e = JSON.parse('{{ energy | escapejs }}');
         var pred = JSON.parse('{{ pred | escapejs }}');
@@ -272,7 +326,14 @@
         var ch3_name = "{{ meter.2.description }}";
         var ch4_name = "{{ meter.3.description }}";
         var now_p = JSON.parse('{{ now_p | escapejs }}');
-        var bill_cost = "{{ bill_cost }}";
+        var firstdate =  "{{ firstdate }}";
+        var col = JSON.parse('{{ d_col | escapejs }}');
+        var p1_wh = JSON.parse('{{ p1_val | escapejs }}');
+        var p2_wh = JSON.parse('{{ p2_val | escapejs }}');
+        var p3_wh = JSON.parse('{{ p3_val | escapejs }}');
+        var p4_wh = JSON.parse('{{ p4_val | escapejs }}');
+        var data_last7 = JSON.parse('{{ data | escapejs }}');
+        var data_last7_pre = JSON.parse('{{ data_pre | escapejs }}');
     </script>
     <script>
         var config = {
@@ -288,6 +349,7 @@
         var database = firebase.database(); 
     </script>
     <script src="{% static 'js/predictchart.js' %}"></script>
+    <script src="{% static 'js/predictchart2.js' %}"></script>
 </body>
 
 </html>
