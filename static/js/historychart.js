@@ -602,10 +602,6 @@ Highcharts.stockChart('container_i', {
     }]
 });
 
-$("#container_kwh .highcharts-axis-labels:first text").click(function() {
-    alert($(this).text());
-});
-
 $(function() {
   $('#datepickerka').daterangepicker({
         autoUpdateInput: false,

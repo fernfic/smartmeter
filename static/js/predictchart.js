@@ -70,19 +70,12 @@ Highcharts.stockChart('actual_main', {
     },
     
     rangeSelector: {
-        buttons: [{
-            count: 15,
-            type: 'minute',
-            text: '15M'
-        },{
-            count: 30,
-            type: 'minute',
-            text: '30M'
-        },{
-            type: 'all',
-            text: 'All'
-        }],
-        selected: 3,
+        buttonTheme: {
+            visibility: 'hidden'
+        },
+        labelStyle: {
+            visibility: 'hidden'
+        },
         inputEnabled: false, // ปิดเลือกวันที่
     },
     legend: {
@@ -109,7 +102,7 @@ Highcharts.stockChart('actual_main', {
     },
     
     navigator: {
-        enabled: true
+        enabled: false
     },
     
     scrollbar: {
@@ -161,19 +154,12 @@ time: {
 },
 
 rangeSelector: {
-    buttons: [{
-        count: 15,
-        type: 'minute',
-        text: '15M'
-    },{
-        count: 30,
-        type: 'minute',
-        text: '30M'
-    },{
-        type: 'all',
-        text: 'All'
-    }],
-    selected: 3,
+    buttonTheme: {
+            visibility: 'hidden'
+        },
+        labelStyle: {
+            visibility: 'hidden'
+        },
     inputEnabled: false, // ปิดเลือกวันที่
 },
 legend: {
@@ -200,7 +186,7 @@ exporting: {
 },
 
 navigator: {
-    enabled: true
+    enabled: false
 },
 
 scrollbar: {
@@ -256,19 +242,99 @@ Highcharts.stockChart('predict_air', {
     },
     
     rangeSelector: {
-        buttons: [{
-            count: 15,
-            type: 'minute',
-            text: '15M'
-        },{
-            count: 30,
-            type: 'minute',
-            text: '30M'
-        },{
-            type: 'all',
-            text: 'All'
-        }],
-        selected: 3,
+        buttonTheme: {
+            visibility: 'hidden'
+        },
+        labelStyle: {
+            visibility: 'hidden'
+        },        inputEnabled: false, // ปิดเลือกวันที่
+    },
+    legend: {
+        enabled : true,
+        verticalAlign: 'top',
+        align : "right"
+    },
+    yAxis: {
+      title: {
+          text: "Active Power(P)"
+      },
+      labels: {
+          format: '{value}W'
+      },
+    },
+    tooltip: {
+        valueDecimals: 2,
+    },
+    credits: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    
+    navigator: {
+        enabled: false
+    },
+    
+    scrollbar: {
+        enabled: false
+    },
+    
+    series: [{
+        name: 'Actual',
+        data: (p4)
+    },
+    {
+        name: 'Predict',
+        data: (p4_pre)
+    },]
+    });
+
+Highcharts.stockChart('predict_plug', {
+    chart: {
+        events: {
+            load: function () {
+                // set up the updating of the chart each second
+                var series1 = this.series[0];
+                var series2 = this.series[1];
+                var ref = database.ref("energy");
+                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
+                    var changedData = snapshot.val();                        
+                    var x =  changedData.time*1000;
+                    var p3 =  changedData.P3;
+                    series1.addPoint([x, p3], false, true);
+                    $.ajax({
+                        url: '/ajax/get_current_predict/',
+                        data: {
+                          'check': true
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data) {
+                                var p3_pre = data['plug'][0]
+                                // alert(data);
+                                series2.addPoint([x, p3_pre], true, true);
+                            }
+                        }
+                    });
+                })
+            }
+        }
+    },
+    title: {
+        text: 'Plug'
+    },
+    time: {
+        useUTC: false
+    },
+    
+    rangeSelector: {
+        buttonTheme: {
+            visibility: 'hidden'
+        },
+        labelStyle: {
+            visibility: 'hidden'
+        },
         inputEnabled: false, // ปิดเลือกวันที่
     },
     legend: {
@@ -295,7 +361,7 @@ Highcharts.stockChart('predict_air', {
     },
     
     navigator: {
-        enabled: true
+        enabled: false
     },
     
     scrollbar: {
@@ -304,105 +370,26 @@ Highcharts.stockChart('predict_air', {
     
     series: [{
         name: 'Actual',
-        data: (p4)
+        data: (p3)
     },
     {
         name: 'Predict',
-        data: (p4_pre)
+        data: (p3_pre)
     },]
+});
+$(function() {
+    $('#datepickerka2').daterangepicker({
+        autoUpdateInput: false,
+        locale: {
+            cancelLabel: 'Clear'
+        }
     });
+});
 
-    Highcharts.stockChart('predict_plug', {
-        chart: {
-            events: {
-                load: function () {
-                    // set up the updating of the chart each second
-                    var series1 = this.series[0];
-                    var series2 = this.series[1];
-                    var ref = database.ref("energy");
-                    ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                        var changedData = snapshot.val();                        
-                        var x =  changedData.time*1000;
-                        var p3 =  changedData.P3;
-                        series1.addPoint([x, p3], false, true);
-                        $.ajax({
-                            url: '/ajax/get_current_predict/',
-                            data: {
-                              'check': true
-                            },
-                            dataType: 'json',
-                            success: function (data) {
-                                if (data) {
-                                    var p3_pre = data['plug'][0]
-                                    // alert(data);
-                                    series2.addPoint([x, p3_pre], true, true);
-                                }
-                            }
-                        });
-                    })
-                }
-            }
-        },
-        title: {
-            text: 'Plug'
-        },
-        time: {
-            useUTC: false
-        },
-        
-        rangeSelector: {
-            buttons: [{
-                count: 15,
-                type: 'minute',
-                text: '15M'
-            },{
-                count: 30,
-                type: 'minute',
-                text: '30M'
-            },{
-                type: 'all',
-                text: 'All'
-            }],
-            selected: 3,
-            inputEnabled: false, // ปิดเลือกวันที่
-        },
-        legend: {
-            enabled : true,
-            verticalAlign: 'top',
-            align : "right"
-        },
-        yAxis: {
-          title: {
-              text: "Active Power(P)"
-          },
-          labels: {
-              format: '{value}W'
-          },
-        },
-        tooltip: {
-            valueDecimals: 2,
-        },
-        credits: {
-            enabled: false
-        },
-        exporting: {
-            enabled: false
-        },
-        
-        navigator: {
-            enabled: true
-        },
-        
-        scrollbar: {
-            enabled: false
-        },
-        
-        series: [{
-            name: 'Actual',
-            data: (p3)
-        },
-        {
-            name: 'Predict',
-            data: (p3_pre)
-        },]
-        });
+$('#datepickerka2').on('apply.daterangepicker', function(ev, picker) {
+    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+});
+
+$('#datepickerka2').on('cancel.daterangepicker', function(ev, picker) {
+    $(this).val('');
+});
