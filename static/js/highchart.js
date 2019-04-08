@@ -168,31 +168,27 @@ chart: {
         }
     }
 },
+// title:{
+//     text: "Real-time Graph"
+// },
 
 time: {
     useUTC: false
 },
 
 rangeSelector: {
-    buttons: [{
-        count: 15,
-        type: 'minute',
-        text: '15M'
-    },{
-        count: 30,
-        type: 'minute',
-        text: '30M'
-    },{
-        type: 'all',
-        text: 'All'
-    }],
-    selected: 3,
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },
     inputEnabled: false, // ปิดเลือกวันที่
 },
 legend: {
     enabled : true,
     verticalAlign: 'top',
-    align : "right"
+    align : "center"
 },
 yAxis: [{
     labels: {
@@ -255,7 +251,7 @@ exporting: {
 },
 
 navigator: {
-        enabled: true
+    enabled: true
 },
 
 scrollbar: {
@@ -361,62 +357,48 @@ series: [{
 }]
 });
 
-Highcharts.stockChart('activePow', {
+Highcharts.stockChart('activePow1', {
 chart: {
     events: {
         load: function () {
             // set up the updating of the chart each second
             var series1 = this.series[0];
-            var series2 = this.series[1];
-            var series3 = this.series[2];
-            var series4 = this.series[3];
             var ref = database.ref("energy");
             ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
                 var changedData = snapshot.val();                        
                 var x =  changedData.time*1000;
                 var p1 =  changedData.P1;
-                var p2 =  changedData.P2;
-                var p3 =  changedData.P3;
-                var p4 =  changedData.P4;
                
-                series1.addPoint([x, p1], false, true);
-                series2.addPoint([x, p2], false, true);
-                series3.addPoint([x, p3], false, true);
-                series4.addPoint([x, p4], true, true);
+                series1.addPoint([x, p1], true, true);
             })
         }
     }
 },
-
+title:{
+    text: "Active Power (P)"
+},
+subtitle:{
+    text: ch1_name
+},
 time: {
     useUTC: false
 },
 
 rangeSelector: {
-    buttons: [{
-        count: 15,
-        type: 'minute',
-        text: '15M'
-    },{
-        count: 30,
-        type: 'minute',
-        text: '30M'
-    },{
-        type: 'all',
-        text: 'All'
-    }],
-    selected: 3,
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },
     inputEnabled: false, // ปิดเลือกวันที่
 },
 legend: {
-    enabled : true,
+    enabled : false,
     verticalAlign: 'top',
-    align : "right"
+    align : "center"
 },
 yAxis: {
-  title: {
-      text: "Active Power(P)"
-  },
   labels: {
       format: '{value}W'
   },
@@ -432,7 +414,7 @@ exporting: {
 },
 
 navigator: {
-    enabled: true
+    enabled: false
 },
 
 scrollbar: {
@@ -442,15 +424,207 @@ scrollbar: {
 series: [{
     name: ch1_name,
     data: (p1)
+}]
+});
+Highcharts.stockChart('activePow2', {
+chart: {
+    events: {
+        load: function () {
+            // set up the updating of the chart each second
+            var series2 = this.series[1];
+            var ref = database.ref("energy");
+            ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
+                var changedData = snapshot.val();                        
+                var x =  changedData.time*1000;
+                var p2 =  changedData.P2;
+               
+                series2.addPoint([x, p2], true, true);
+            })
+        }
+    }
 },
-{
+subtitle:{
+    text: ch2_name
+},
+time: {
+    useUTC: false
+},
+
+rangeSelector: {
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },
+    inputEnabled: false, // ปิดเลือกวันที่
+},
+legend: {
+    enabled : false,
+    verticalAlign: 'top',
+    align : "center"
+},
+yAxis: {
+  labels: {
+      format: '{value}W'
+  },
+},
+tooltip: {
+    valueDecimals: 2,
+},
+credits: {
+    enabled: false
+},
+exporting: {
+    enabled: false
+},
+
+navigator: {
+    enabled: false
+},
+
+scrollbar: {
+    enabled: false
+},
+
+series: [{
+    colorIndex:1,
     name: ch2_name,
     data: (p2)
+}]
+});
+Highcharts.stockChart('activePow3', {
+chart: {
+    events: {
+        load: function () {
+            // set up the updating of the chart each second
+            var series3 = this.series[2];
+            var ref = database.ref("energy");
+            ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
+                var changedData = snapshot.val();                        
+                var x =  changedData.time*1000;
+                var p3 =  changedData.P3;
+               
+                series3.addPoint([x, p3], true, true);
+            })
+        }
+    }
 },
-{
+
+subtitle:{
+    text: ch3_name
+},
+time: {
+    useUTC: false
+},
+
+rangeSelector: {
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },
+    inputEnabled: false, // ปิดเลือกวันที่
+},
+legend: {
+    enabled : false,
+    verticalAlign: 'top',
+    align : "center"
+},
+yAxis: {
+  labels: {
+      format: '{value}W'
+  },
+},
+tooltip: {
+    valueDecimals: 2,
+},
+credits: {
+    enabled: false
+},
+exporting: {
+    enabled: false
+},
+
+navigator: {
+    enabled: false
+},
+
+scrollbar: {
+    enabled: false
+},
+
+series: [{
+    colorIndex:2,
     name: ch3_name,
     data: (p3)
-},{
+}]
+});
+Highcharts.stockChart('activePow4', {
+chart: {
+    events: {
+        load: function () {
+            // set up the updating of the chart each second
+            var series4 = this.series[3];
+            var ref = database.ref("energy");
+            ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
+                var changedData = snapshot.val();                        
+                var x =  changedData.time*1000;
+                var p4 =  changedData.P4;
+               
+                series4.addPoint([x, p4], true, true);
+            })
+        }
+    }
+},
+
+subtitle:{
+    text: ch4_name
+},
+time: {
+    useUTC: false
+},
+
+rangeSelector: {
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },
+    inputEnabled: false, // ปิดเลือกวันที่
+},
+legend: {
+    enabled : false,
+    verticalAlign: 'top',
+    align : "center"
+},
+yAxis: {
+  labels: {
+      format: '{value}W'
+  },
+},
+tooltip: {
+    valueDecimals: 2,
+},
+credits: {
+    enabled: false
+},
+exporting: {
+    enabled: false
+},
+
+navigator: {
+    enabled: false
+},
+
+scrollbar: {
+    enabled: false
+},
+
+series: [{
+    colorIndex:3,
     name: ch4_name ,
     data: (p4)
 }]
@@ -489,29 +663,18 @@ time: {
 },
 
 rangeSelector: {
-    buttons: [{
-        count: 1,
-        type: 'minute',
-        text: '1M'
-    },{
-        count: 15,
-        type: 'minute',
-        text: '15M'
-    },{
-        count: 30,
-        type: 'minute',
-        text: '30M'
-    },{
-        type: 'all',
-        text: 'All'
-    }],
-    selected: 3,
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },
     inputEnabled: false, // ปิดเลือกวันที่
 },
 legend: {
     enabled : true,
     verticalAlign: 'top',
-    align : "right"
+    align : "center"
 },
 yAxis: {
   title: {
@@ -589,25 +752,18 @@ time: {
 },
 
 rangeSelector: {
-    buttons: [{
-        count: 15,
-        type: 'minute',
-        text: '15M'
-    },{
-        count: 30,
-        type: 'minute',
-        text: '30M'
-    },{
-        type: 'all',
-        text: 'All'
-    }],
-    selected: 3,
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },
     inputEnabled: false, // ปิดเลือกวันที่
 },
 legend: {
     enabled : true,
     verticalAlign: 'top',
-    align : "right"
+    align : "center"
 },
 yAxis: {
   title: {
@@ -687,25 +843,17 @@ time: {
 },
 
 rangeSelector: {
-    buttons: [{
-        count: 15,
-        type: 'minute',
-        text: '15M'
-    },{
-        count: 30,
-        type: 'minute',
-        text: '30M'
-    },{
-        type: 'all',
-        text: 'All'
-    }],
-    selected: 3,
-    inputEnabled: false, // ปิดเลือกวันที่
+    buttonTheme: {
+        visibility: 'hidden'
+    },
+    labelStyle: {
+        visibility: 'hidden'
+    },    inputEnabled: false, // ปิดเลือกวันที่
 },
 legend: {
     enabled : true,
     verticalAlign: 'top',
-    align : "right"
+    align : "center"
 },
 yAxis: {
   title: {
