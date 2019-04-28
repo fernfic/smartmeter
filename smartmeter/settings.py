@@ -30,10 +30,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'peerawit.sc@gmail.com'
-EMAIL_HOST_PASSWORD = 'p029064755'
+EMAIL_HOST_USER = 'home.energix@gmail.com'
+EMAIL_HOST_PASSWORD = 'home12345678'
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'Developer Team Peerawit and Supitcha'
+DEFAULT_FROM_EMAIL = "Home Energix's Developer Team"
 
 # Application definition
 
