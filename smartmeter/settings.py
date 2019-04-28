@@ -25,7 +25,7 @@ SECRET_KEY = 'z=85vr79$_ej=)0i3@#snddkuv*#yv1chb1n+5c(8iihjrg_bf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['35.198.210.161']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 EMAIL_USE_TLS = True
