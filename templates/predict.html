@@ -158,54 +158,7 @@
 					                    <input type="text" id="datepickerka2" name="datefilter" value="Select Date" style="width:180px" />
 					                    <button type="button" id="button">Submit!</button> 
 					                </div>
-					                <!-- <div class="row" style="width:100%; margin:0">
-					                    <div class="col-12">
-					                        <div class="row">
-					                            <div class="col-3">
-					                                <div class="card card-hover">
-					                                    <div class="box bg-warning text-center">
-					                                        <h5>{{ meter.0.description }}</h5>
-					                                        <h2 id="sum_p1_val">0</h2>
-					                                        <h6>kWh</h6>
-					                                    </div>
-					                                </div>
-					                            </div>
-					                            <div class="col-3">
-					                                <div class="card card-hover">
-					                                    <div class="box bg-dark text-center">
-					                                        <h5 class="text-white">Predict {{ meter.1.description }}</h5>
-					                                        <h2 id="sum_p2_val" class="font-light text-white">0</h2>
-					                                        <h6 class="text-white">kWh</h6>
-					                                    </div>
-					                                </div>
-					                            </div>
-					                            <div class="col-3">
-					                                <div class="card card-hover">
-					                                    <div class="box bg-dark text-center">
-					                                        <h5 class="text-white">Predict {{ meter.2.description }}</h5>
-					                                        <h2 id="sum_p3_val" class="font-light text-white">0</h2>
-					                                        <h6 class="text-white">kWh</h6>
-					                                    </div>
-					                                </div>
-					                            </div>
-					                            <div class="col-3">
-					                                <div class="card card-hover">
-					                                    <div class="box bg-dark text-center">
-					                                        <h5 class="text-white">Predict {{ meter.3.description }}</h5>
-					                                        <h2 id="sum_p4_val" class="font-light text-white">0</h2>
-					                                        <h6 class="text-white">kWh</h6>
-					                                    </div>
-					                                </div>
-					                            </div>
-					                        </div>
-					                    </div>
-					                </div> -->
                                     <div class="row" style="width:100%; margin:0">
-                                        <!-- <div class="col-12">
-                                            <div class="card">
-					                            <div id="container_kwh_pre" style="height: 380px; min-width: 310px"></div>
-					                        </div>
-                                        </div> -->
                                         <div class="col-12">
                                             <div class="card">
 					                            <div id="main_select" style="height: 380px; min-width: 310px"></div>
@@ -327,6 +280,7 @@
         var ch4_name = "{{ meter.3.description }}";
         var now_p = JSON.parse('{{ now_p | escapejs }}');
         var firstdate =  "{{ firstdate }}";
+        var lastdate = "{{ lastdate }}";
         var col = JSON.parse('{{ d_col | escapejs }}');
         var p1_wh = JSON.parse('{{ p1_val | escapejs }}');
         var p2_wh = JSON.parse('{{ p2_val | escapejs }}');

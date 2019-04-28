@@ -53,6 +53,7 @@ for(var i=0;i< data_last7.time[0].length ;i++){
     i3.push([time, parseInt(data_last7.i3[0][i])]);
     i4.push([time, parseInt(data_last7.i4[0][i])]);
 }
+console.log(lastdate)
 var chart_year = Highcharts.chart('container_kwh', {
     chart: {
         type: 'column'
@@ -61,7 +62,7 @@ var chart_year = Highcharts.chart('container_kwh', {
         text: 'Whole Energy Per Day'
     },
     subtitle: {
-        text: firstdate+' - '+moment().format('DD/MM/YYYY')
+        text: firstdate+' - '+lastdate
     },
     xAxis: {
         categories: col,
@@ -133,7 +134,7 @@ Highcharts.stockChart('all', {
         text: 'All'
     },
     subtitle: {
-        text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
+        text: firstdate+' - '+lastdate
     },  
     time: {
         useUTC: false
@@ -333,7 +334,7 @@ Highcharts.stockChart('container_p', {
         text: 'Active Power'
     },
     subtitle: {
-        text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
+        text: firstdate+' - '+lastdate
     },
     time: {
         useUTC: false
@@ -401,7 +402,7 @@ Highcharts.stockChart('container_q', {
         text: 'Reactive Power'
     },
     subtitle: {
-        text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
+        text: firstdate+' - '+lastdate
     },
     time: {
         useUTC: false
@@ -470,7 +471,7 @@ Highcharts.stockChart('container_s', {
         text: 'Apparent Power'
     },
     subtitle: {
-        text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
+        text: firstdate+' - '+lastdate
     },
     time: {
         useUTC: false
@@ -538,7 +539,7 @@ Highcharts.stockChart('container_i', {
         text: 'Current'
     },
     subtitle: {
-        text: moment().subtract(6,'d').format('DD/MM/YYYY')+' - '+moment().format('DD/MM/YYYY')
+        text: firstdate+' - '+lastdate
     },
     time: {
         useUTC: false
@@ -602,13 +603,24 @@ Highcharts.stockChart('container_i', {
     }]
 });
 
+
+
+
 $(function() {
   $('#datepickerka').daterangepicker({
-        autoUpdateInput: false,
-        locale: {
-            cancelLabel: 'Clear'
-    }
-});
+        "autoApply": true,
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+        },
+        "linkedCalendars": false,
+        "showCustomRangeLabel": false,
+        "alwaysShowCalendars": true,
+    })
 $("#button").click(function() {
     var start_date = $("#datepickerka").data('daterangepicker').startDate.format('YYYYMMDD');
     var end_date = $("#datepickerka").data('daterangepicker').endDate.format('YYYYMMDD');
@@ -851,28 +863,20 @@ $("#button").click(function() {
 
                     series: [{
                         id:"ch1",
-                        // colorIndex:0,
-                        // linkedTo: "ch1",
                         name: ch1_name,
                         data: (p1)
                     },
                     {
                         id:"ch2",
-                        // colorIndex:1,
-                        // linkedTo: "ch2",
                         name: ch2_name,
                         data: (p2)
                     },
                     {
                         id:"ch3",
-                        // colorIndex:2,
-                        // linkedTo: "ch3",
                         name: ch3_name,
                         data: (p3)
                     },{
                         id:"ch4",
-                        // colorIndex:3,
-                        // linkedTo: "ch4",
                         name: ch4_name ,
                         data: (p4),
                     },{
@@ -1228,8 +1232,10 @@ $("#button").click(function() {
     });
 });
 
+
 $('#datepickerka').on('apply.daterangepicker', function(ev, picker) {
     $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+    
 });
 
 $('#datepickerka').on('cancel.daterangepicker', function(ev, picker) {

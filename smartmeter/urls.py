@@ -19,7 +19,7 @@ urlpatterns = [
     url(r'^$', views.index),
     url(r'^index', views.index),
     url(r'^setting/', views.setting),
-    url(r'^graph/', views.graph),
+    url(r'^predict/', views.predict),
     url(r'^history/', views.history),
 
     # ajax views

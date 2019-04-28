@@ -33,7 +33,6 @@ Highcharts.stockChart('actual_main', {
             load: function () {
                 // set up the updating of the chart each second
                 var series1 = this.series[0];
-                // var series2 = this.series[1];
                 var ref = database.ref("energy");
                 ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
                     var changedData = snapshot.val();                        

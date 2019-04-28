@@ -41,7 +41,7 @@ p2_pre_wh, p3_pre_wh, p4_pre_wh = ({'day':{}} for i in range(3))
 cur_d1m, cur_d1hr, cur_d30m = (pd.DataFrame() for i in range(3))
 cur_wh = [0, 0, 0, 0]
 watt_data = deque([])
-
+backup = False
 key = {
     "type": "service_account",
     "project_id": "data-log-fb39d",
@@ -114,13 +114,17 @@ def setting(request):
 
 @login_required
 def history(request):
-    global p1_wh, p2_wh, p3_wh, p4_wh, cur_wh
+    global p1_wh, p2_wh, p3_wh, p4_wh, cur_wh, backup
     column = []
     _m = Meter.objects.all()
     p1_val, p2_val, p3_val, p4_val = [[] for i in range(4)]
     for k in p1_wh['day']:
         column.append(k)
-    column = sorted(column)[-6:]
+    if backup:
+        column = sorted(column)[-6:]
+    else:
+        column = sorted(column)[-7:]
+    print(column)
     for c in column:
         p1_val.append(p1_wh['day'][c]/1000)
         p2_val.append(p2_wh['day'][c]/1000)
@@ -129,17 +133,20 @@ def history(request):
 
     today = unixtime_to_readable(time.time())
     today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
-    if today_s not in column :
+    if today_s not in column and backup:
         column.append(today_s)
         p1_val.append(cur_wh[0]/1000)
         p2_val.append(cur_wh[1]/1000)
         p3_val.append(cur_wh[2]/1000)
         p4_val.append(cur_wh[3]/1000)
     data_7days = get_data_last_7days()[0]
+
     today_d = datetime.strptime(today_s, '%Y-%m-%d')
     today_new = today_d.strftime('%d/%m/%Y')
     firstdate_d = datetime.strptime(column[0], '%Y-%m-%d')
     firstdate_new = firstdate_d.strftime('%d/%m/%Y')
+    lastdate_d = datetime.strptime(column[-1], '%Y-%m-%d')
+    lastdate_new = lastdate_d.strftime('%d/%m/%Y')
 
     sum_p1_val = round(sum(p1_val),2)
     sum_p2_val = round(sum(p2_val),2)
@@ -152,6 +159,7 @@ def history(request):
                                           "p3_val": json.dumps(p3_val),
                                           "p4_val": json.dumps(p4_val),
                                           "firstdate": firstdate_new,
+                                          "lastdate": lastdate_new,
                                           "today":today_new,
                                           "sum_p1_val": sum_p1_val,
                                           "sum_p2_val": sum_p2_val,
@@ -162,7 +170,7 @@ def history(request):
     
 
 @login_required    
-def graph(request):
+def predict(request):
     global watt_data, load_model, lp, p1_wh, p2_pre_wh, p3_pre_wh, p4_pre_wh, cur_wh, cur_d1m
     _m = Meter.objects.all()
     column = []
@@ -193,6 +201,8 @@ def graph(request):
     data_7days_pre = get_data_last_7days()[1]
     today_d = datetime.strptime(today_s, '%Y-%m-%d')
     today_new = today_d.strftime('%d/%m/%Y')
+    lastdate_d = datetime.strptime(column[-1], '%Y-%m-%d')
+    lastdate_new = lastdate_d.strftime('%d/%m/%Y')
 
     keep_app = []
     p_pre = []
@@ -212,7 +222,7 @@ def graph(request):
     now_p4 = y_pd["ap3"][len(y_pd['ap3'])-1]
     now_p = [now_p1, now_p2, now_p3, now_p4]
     # print(watt_data)
-    return render(request, "graph.html",{"energy": json.dumps(list(watt_data)), 
+    return render(request, "predict.html",{"energy": json.dumps(list(watt_data)), 
     									 "now_p": json.dumps(now_p),
     									 "d_col": json.dumps(column),
     									 "p1_val": json.dumps(p1_val),
@@ -221,6 +231,7 @@ def graph(request):
                                          "p4_val": json.dumps(p4_val),
                                          "today":today_new,
                                          "firstdate": firstdate_new,
+                                         "lastdate": lastdate_new,
                                          "data": json.dumps(data_7days),
                                          "data_pre": json.dumps(data_7days_pre),
                                          "pred": json.dumps(y_pd), "meter": _m})
@@ -390,7 +401,9 @@ def get_data_setting():
     return bill_date
 
 def backup_from_firebase():
+    global backup
     print("Start Backup")
+    backup = True
     t_start = datetime.now()
     d_1m, d_30m, d_1hr, d_1m_cur, d_30m_cur, d_1hr_cur = (pd.DataFrame() for i in range(6))
     p1_wh_value, p2_wh_value, p3_wh_value, p4_wh_value = (0 for i in range(4))
@@ -695,6 +708,7 @@ def get_data_last_7days():
     keep_data = pd.DataFrame()
     exist_file, list_val = [], []
     check_today = False
+    no_anyday = False
     query_time = ""
     today = unixtime_to_readable(time.time())
     today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
@@ -705,6 +719,13 @@ def get_data_last_7days():
             exist_file.append(file_name)
         elif(date == today_s):
             check_today = True
+        else:
+            no_anyday = True
+    if no_anyday:
+        file_ = sorted(os.listdir(file_path), reverse=True)
+        exist_file = sorted(file_[:7])
+        string = file_path
+        exist_file = [string + x for x in exist_file]
     if(1 <= len(exist_file) <= 7 or check_today):
         query_time = "1m"
     else:
@@ -732,11 +753,10 @@ def get_data_last_7days():
     X_test = pd.DataFrame({'time':data['time'][0],'P':data['p1'][0],'Q':data['q1'][0]})
     predictions1 = load_model.predict(X_test)
     y_pd = convert_values(predictions1, lp).to_dict()
-
     return [data, y_pd]
-        
-@csrf_protect
+
 def get_date_return_json(request):
+    global backup
     if request.method == "GET" and request.is_ajax():
         all_date = request.GET.get('all_date')
         date_list = json.loads(all_date)
@@ -754,8 +774,10 @@ def get_date_return_json(request):
             file_name = file_path+date+".json"
             if(os.path.isfile(file_name)):
                 exist_file.append(file_name)
-            elif(date == today_s):
+            elif(date == today_s and backup):
                 check_today = True
+            else:
+                print("NO DAY")
         if(1 <= len(exist_file) <= 7 or check_today):
             query_time = "1m"
         elif(len(exist_file) >= 8 and len(exist_file) <= 30):
