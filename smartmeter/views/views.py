@@ -84,7 +84,6 @@ def index(request):
     now_p3 = watt_data[-1]["P3"]
     now_p4 = watt_data[-1]["P4"]
     now_p = [now_p1, now_p2, now_p3, now_p4]
-    monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
     bill_cost, bill_date =  get_cur_wh()
     data_cur = (bill_cost+cur_wh[0])/1000
     cost = calculate_cost_energy(data_cur)
@@ -170,7 +169,7 @@ def history(request):
     
 
 @login_required    
-def predict(request):
+def estimation(request):
     global watt_data, load_model, lp, p1_wh, p2_pre_wh, p3_pre_wh, p4_pre_wh, cur_wh, cur_d1m
     _m = Meter.objects.all()
     column = []
@@ -222,7 +221,7 @@ def predict(request):
     now_p4 = y_pd["ap3"][len(y_pd['ap3'])-1]
     now_p = [now_p1, now_p2, now_p3, now_p4]
     # print(watt_data)
-    return render(request, "predict.html",{"energy": json.dumps(list(watt_data)), 
+    return render(request, "estimation.html",{"energy": json.dumps(list(watt_data)), 
     									 "now_p": json.dumps(now_p),
     									 "d_col": json.dumps(column),
     									 "p1_val": json.dumps(p1_val),
@@ -301,7 +300,6 @@ def get_current_energy(request):
     today = unixtime_to_readable(time.time())
     month = today[0]+"-"+today[1].zfill(2)
     day = today[0]+"-"+today[1].zfill(2)+'-'+today[2].zfill(2)
-    monthly_p1 = (p1_wh['month'][month] + cur_wh[0])/1000
     bill_cost, bill_date =  get_cur_wh()
     data_cur = (bill_cost+cur_wh[0])/1000
     cost = calculate_cost_energy(data_cur)
