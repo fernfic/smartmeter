@@ -339,8 +339,8 @@ def save_json(keep_day, d_1m, d_30m, d_1hr, p1_wh_val, p2_wh_val, p3_wh_val, p4_
         json.dump(keep_json, f, ensure_ascii=False)
     print("upload json "+file_name)
     d = year+"-"+month.zfill(2)+"-"+day.zfill(2)
-    m = year+"-"+month.zfill(2)
-    set_data_realtime(d, m, year, [keep_json['sum_p1'],keep_json['sum_p2'],keep_json['sum_p3'],keep_json['sum_p4']])
+    val = [keep_json['sum_p1'],keep_json['sum_p2'],keep_json['sum_p3'],keep_json['sum_p4']]
+    p1_wh['day'][d], p2_wh['day'][d], p3_wh['day'][d], p4_wh['day'][d] = val
 
 def keep_data_realtime(d, wh, time_data, keep_day, keep_hour, keep_minute, check30):
     global cur_d1m, cur_d1hr, cur_d30m, cur_wh, watt_data
@@ -544,7 +544,6 @@ def check_condition(val, time_value, keep_day, keep_hour, keep_minute, check30, 
     d_1hr_cur = d_1hr_cur.append(pd.DataFrame([list_values], columns=list_column), ignore_index=True)
     d = [d_1m, d_30m, d_1hr, d_1m_cur, d_30m_cur, d_1hr_cur]
     wh = [p1_wh_value, p2_wh_value, p3_wh_value, p4_wh_value]
-    # print(p1_wh_value)
 
     return(keep_day, keep_hour, keep_minute, check30, d, wh, time_data)
 
@@ -586,31 +585,12 @@ def set_data():
             _m = os.path.splitext(s)[0].split('-')[1]
             _y = os.path.splitext(s)[0].split('-')[0]
             new_day = _y+'-'+_m.zfill(2)+'-'+_d.zfill(2)
-            new_month = _y+'-'+_m.zfill(2)
-            new_year = _y
-            if old_month != new_month:
-                old_month = new_month
-                p1_wh['month'][new_month], p2_wh['month'][new_month], p3_wh['month'][new_month], p4_wh['month'][new_month] = [0 for i in range(4)]
-            if old_year != new_year:
-                old_year = new_year
-                p1_wh['year'][new_year], p2_wh['year'][new_year], p3_wh['year'][new_year], p4_wh['year'][new_year] = [0 for i in range(4)]
-
             with open(file_path+s) as f:
                 data = json.load(f)
                 p1_wh['day'][new_day] = data['sum_p1']
                 p2_wh['day'][new_day] = data['sum_p2']
                 p3_wh['day'][new_day] = data['sum_p3']
                 p4_wh['day'][new_day] = data['sum_p4']
-
-                p1_wh['month'][new_month] += data['sum_p1']
-                p2_wh['month'][new_month] += data['sum_p2']
-                p3_wh['month'][new_month] += data['sum_p3']
-                p4_wh['month'][new_month] += data['sum_p4']
-
-                p1_wh['year'][new_year] += data['sum_p1']
-                p2_wh['year'][new_year] += data['sum_p2']
-                p3_wh['year'][new_year] += data['sum_p3']
-                p4_wh['year'][new_year] += data['sum_p4']
 
                 # predict
                 X_test = pd.DataFrame({'time':data['1m']['time'],'P':data['1m']['p1'],'Q':data['1m']['q1']})
@@ -657,24 +637,6 @@ def calculate_cost_energy(energy):
         dunit = float(data["unit"])
         last_cost = round(energy*dunit,2)
     return last_cost
-
-def set_data_realtime(d, m, y, val):
-    global p1_wh, p2_wh, p3_wh, p4_wh
-    p1_wh['day'][d], p2_wh['day'][d], p3_wh['day'][d], p4_wh['day'][d] = val
-    try:
-        p1_wh['month'][m] += val[0]
-        p2_wh['month'][m] += val[1]
-        p3_wh['month'][m] += val[2]
-        p4_wh['month'][m] += val[3]
-    except:
-        p1_wh['month'][m], p2_wh['month'][m], p3_wh['month'][m], p4_wh['month'][m] = val
-    try:
-        p1_wh['year'][y] += val[0]
-        p2_wh['year'][y] += val[1]
-        p3_wh['year'][y] += val[2]
-        p4_wh['year'][y] += val[3]
-    except:
-        p1_wh['year'][y], p2_wh['year'][y], p3_wh['year'][y], p4_wh['year'][y] = val
 
 def save_bill_cost(json_data, update_json=False):
     module_dir = os.path.dirname(__file__)  
@@ -768,7 +730,7 @@ def get_date_return_json(request):
         today = unixtime_to_readable(time.time())
         today_s = today[0]+'-'+today[1].zfill(2)+'-'+today[2].zfill(2)
         for date in date_list:
-            print(date)
+            # print(date)
             file_name = file_path+date+".json"
             if(os.path.isfile(file_name)):
                 exist_file.append(file_name)
