@@ -19,14 +19,6 @@ var p1 = [];
 var p2 = [];
 var p3 = [];
 var p4 = [];
-var q1 = [];
-var q2 = [];
-var q3 = [];
-var q4 = [];
-var s1 = [];
-var s2 = [];
-var s3 = [];
-var s4 = [];
 var i1 = [];
 var i2 = [];
 var i3 = [];
@@ -37,16 +29,6 @@ for(var i=0;i< data_last7.time[0].length ;i++){
     p2.push([time, parseInt(data_last7.p2[0][i])]);
     p3.push([time, parseInt(data_last7.p3[0][i])]);
     p4.push([time, parseInt(data_last7.p4[0][i])]);
-
-    q1.push([time, parseInt(data_last7.q1[0][i])]);
-    q2.push([time, parseInt(data_last7.q2[0][i])]);
-    q3.push([time, parseInt(data_last7.q3[0][i])]);
-    q4.push([time, parseInt(data_last7.q4[0][i])]);
-
-    s1.push([time, parseInt(data_last7.s1[0][i])]);
-    s2.push([time, parseInt(data_last7.s2[0][i])]);
-    s3.push([time, parseInt(data_last7.s3[0][i])]);
-    s4.push([time, parseInt(data_last7.s4[0][i])]);
 
     i1.push([time, parseInt(data_last7.i1[0][i])]);
     i2.push([time, parseInt(data_last7.i2[0][i])]);
@@ -163,33 +145,7 @@ Highcharts.stockChart('all', {
         title: {
             text: 'Active Power(P)'
         },
-        height: '20%',
-        lineWidth: 2
-    }, {
-        labels: {
-            align: 'right',
-            x: -3,
-            format: '{value}VAR'
-        },
-        title: {
-            text: 'Reactive Power(Q)'
-        },
-        top: '25%',
-        height: '20%',
-        offset: 0,
-        lineWidth: 2
-    }, {
-        labels: {
-            align: 'right',
-            x: -3,
-            format: '{value}VA'
-        },
-        title: {
-            text: 'Apparent Power(S)'
-        },
-        top: '50%',
-        height: '20%',
-        offset: 0,
+        height: '45%',
         lineWidth: 2
     }, {
         labels: {
@@ -200,8 +156,8 @@ Highcharts.stockChart('all', {
         title: {
             text: 'Current(I)'
         },
-        top: '75%',
-        height: '20%',
+        top: '55%',
+        height: '45%',
         offset: 0,
         lineWidth: 2
     }],
@@ -227,105 +183,47 @@ Highcharts.stockChart('all', {
 
     series: [{
         id:"ch1",
-        // colorIndex:0,
-        // linkedTo: "ch1",
         name: ch1_name,
         data: (p1)
     },
     {
         id:"ch2",
-        // colorIndex:1,
-        // linkedTo: "ch2",
         name: ch2_name,
         data: (p2)
     },
     {
         id:"ch3",
-        // colorIndex:2,
-        // linkedTo: "ch3",
         name: ch3_name,
         data: (p3)
     },{
         id:"ch4",
-        // colorIndex:3,
-        // linkedTo: "ch4",
         name: ch4_name ,
         data: (p4),
     },{
         colorIndex:0,
         name: ch1_name,
         linkedTo: "ch1",
-        data: (q1),
-        yAxis:1,
-    },{
-        colorIndex:1,
-        name: ch2_name,
-        linkedTo: "ch2",
-        data: (q2),
-        yAxis:1,
-    },
-    {
-        colorIndex:2,
-        name: ch3_name,
-        linkedTo: "ch3",
-        data: (q3),
-        yAxis:1,
-    },{
-        colorIndex:3,
-        name: ch4_name ,
-        linkedTo: "ch4",
-        data: (q4),
-        yAxis:1,
-    },{
-        colorIndex:0,
-        name: ch1_name,
-        linkedTo: "ch1",
-        data: (s1),
-        yAxis:2,
-    },{
-        colorIndex:1,
-        name: ch2_name,
-        linkedTo: "ch2",
-        data: (s2),
-        yAxis:2,
-    },
-    {
-        colorIndex:2,
-        name: ch3_name,
-        linkedTo: "ch3",
-        data: (s3),
-        yAxis:2,
-    },{
-        colorIndex:3,
-        name: ch4_name ,
-        linkedTo: "ch4",
-        data: (s4),
-        yAxis:2,
-    },{
-        colorIndex:0,
-        name: ch1_name,
-        linkedTo: "ch1",
         data: (i1),
-        yAxis:3,
+        yAxis:1,
     },{
         colorIndex:1,
         name: ch2_name,
         linkedTo: "ch2",
         data: (i2),
-        yAxis:3,
+        yAxis:1,
     },
     {
         colorIndex:2,
         name: ch3_name,
         linkedTo: "ch3",
         data: (i3),
-        yAxis:3,
+        yAxis:1,
     },{
         colorIndex:3,
         name: ch4_name ,
         linkedTo: "ch4",
         data: (i4),
-        yAxis:3,
+        yAxis:1,
     }]
 });
 
@@ -397,143 +295,7 @@ Highcharts.stockChart('container_p', {
         data: (p4)
     }]
 });
-Highcharts.stockChart('container_q', {
-    title: {
-        text: 'Reactive Power'
-    },
-    subtitle: {
-        text: firstdate+' - '+lastdate
-    },
-    time: {
-        useUTC: false
-    },
-    rangeSelector: {
-        inputEnabled: false, 
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        }
-    },
-    legend: {
-        enabled : true,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        title: {
-            text: "Reactive Power(Q)"
-        },
-        labels: {
-            format: '{value}VAR'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
 
-    navigator: {
-        enabled: true
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-    credits: {
-        enabled: false
-    },
-    series: [{
-        name: ch1_name,
-        data: (q1)
-    },
-    {
-        name: ch2_name,
-        data: (q2)
-    },
-    {
-        name: ch3_name,
-        data: (q3)
-    },{
-        name: ch4_name ,
-        data: (q4)
-    }]
-});
-
-Highcharts.stockChart('container_s', {
-    title: {
-        text: 'Apparent Power'
-    },
-    subtitle: {
-        text: firstdate+' - '+lastdate
-    },
-    time: {
-        useUTC: false
-    },
-    rangeSelector: {
-        inputEnabled: false, 
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        }
-    },
-    legend: {
-        enabled : true,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        title: {
-            text: "Apparent Power(S)"
-        },
-        labels: {
-            format: '{value}VA'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: true
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-    credits: {
-        enabled: false
-    },
-    series: [{
-        name: ch1_name,
-        data: (s1)
-    },
-    {
-        name: ch2_name,
-        data: (s2)
-    },
-    {
-        name: ch3_name,
-        data: (s3)
-    },{
-        name: ch4_name ,
-        data: (s4)
-    }]
-});
 Highcharts.stockChart('container_i', {
     title: {
         text: 'Current'
@@ -603,9 +365,6 @@ Highcharts.stockChart('container_i', {
     }]
 });
 
-
-
-
 $(function() {
   $('#datepickerka').daterangepicker({
         "autoApply": true,
@@ -637,14 +396,6 @@ $("#button").click(function() {
                 var p2 = [];
                 var p3 = [];
                 var p4 = [];
-                var q1 = [];
-                var q2 = [];
-                var q3 = [];
-                var q4 = [];
-                var s1 = [];
-                var s2 = [];
-                var s3 = [];
-                var s4 = [];
                 var i1 = [];
                 var i2 = [];
                 var i3 = [];
@@ -672,14 +423,6 @@ $("#button").click(function() {
                     p2.push([time, parseInt(data.p2[0][i])]);
                     p3.push([time, parseInt(data.p3[0][i])]);
                     p4.push([time, parseInt(data.p4[0][i])]);
-                    q1.push([time, parseInt(data.q1[0][i])]);
-                    q2.push([time, parseInt(data.q2[0][i])]);
-                    q3.push([time, parseInt(data.q3[0][i])]);
-                    q4.push([time, parseInt(data.q4[0][i])]);
-                    s1.push([time, parseInt(data.s1[0][i])]);
-                    s2.push([time, parseInt(data.s2[0][i])]);
-                    s3.push([time, parseInt(data.s3[0][i])]);
-                    s4.push([time, parseInt(data.s4[0][i])]);
                     i1.push([time, parseInt(data.i1[0][i])]);
                     i2.push([time, parseInt(data.i2[0][i])]);
                     i3.push([time, parseInt(data.i3[0][i])]);
@@ -799,33 +542,7 @@ $("#button").click(function() {
                         title: {
                             text: 'Active Power(P)'
                         },
-                        height: '20%',
-                        lineWidth: 2
-                    }, {
-                        labels: {
-                            align: 'right',
-                            x: -3,
-                            format: '{value}VAR'
-                        },
-                        title: {
-                            text: 'Reactive Power(Q)'
-                        },
-                        top: '25%',
-                        height: '20%',
-                        offset: 0,
-                        lineWidth: 2
-                    }, {
-                        labels: {
-                            align: 'right',
-                            x: -3,
-                            format: '{value}VA'
-                        },
-                        title: {
-                            text: 'Apparent Power(S)'
-                        },
-                        top: '50%',
-                        height: '20%',
-                        offset: 0,
+                        height: '45%',
                         lineWidth: 2
                     }, {
                         labels: {
@@ -836,8 +553,8 @@ $("#button").click(function() {
                         title: {
                             text: 'Current(I)'
                         },
-                        top: '75%',
-                        height: '20%',
+                        top: '55%',
+                        height: '45%',
                         offset: 0,
                         lineWidth: 2
                     }],
@@ -883,77 +600,27 @@ $("#button").click(function() {
                         colorIndex:0,
                         name: ch1_name,
                         linkedTo: "ch1",
-                        data: (q1),
-                        yAxis:1,
-                    },{
-                        colorIndex:1,
-                        name: ch2_name,
-                        linkedTo: "ch2",
-                        data: (q2),
-                        yAxis:1,
-                    },
-                    {
-                        colorIndex:2,
-                        name: ch3_name,
-                        linkedTo: "ch3",
-                        data: (q3),
-                        yAxis:1,
-                    },{
-                        colorIndex:3,
-                        name: ch4_name ,
-                        linkedTo: "ch4",
-                        data: (q4),
-                        yAxis:1,
-                    },{
-                        colorIndex:0,
-                        name: ch1_name,
-                        linkedTo: "ch1",
-                        data: (s1),
-                        yAxis:2,
-                    },{
-                        colorIndex:1,
-                        name: ch2_name,
-                        linkedTo: "ch2",
-                        data: (s2),
-                        yAxis:2,
-                    },
-                    {
-                        colorIndex:2,
-                        name: ch3_name,
-                        linkedTo: "ch3",
-                        data: (s3),
-                        yAxis:2,
-                    },{
-                        colorIndex:3,
-                        name: ch4_name ,
-                        linkedTo: "ch4",
-                        data: (s4),
-                        yAxis:2,
-                    },{
-                        colorIndex:0,
-                        name: ch1_name,
-                        linkedTo: "ch1",
                         data: (i1),
-                        yAxis:3,
+                        yAxis:1,
                     },{
                         colorIndex:1,
                         name: ch2_name,
                         linkedTo: "ch2",
                         data: (i2),
-                        yAxis:3,
+                        yAxis:1,
                     },
                     {
                         colorIndex:2,
                         name: ch3_name,
                         linkedTo: "ch3",
                         data: (i3),
-                        yAxis:3,
+                        yAxis:1,
                     },{
                         colorIndex:3,
                         name: ch4_name ,
                         linkedTo: "ch4",
                         data: (i4),
-                        yAxis:3,
+                        yAxis:1,
                     }]
                 });
 
@@ -1024,140 +691,6 @@ $("#button").click(function() {
                     }]
                 });
                 
-                Highcharts.stockChart('container_q', {
-                    title: {
-                        text: 'Reactive Power'
-                    },
-                    subtitle: {
-                        text: moment(start_date).format('DD/MM/YYYY')+' - '+moment(end_date).format('DD/MM/YYYY')
-                    },
-                    time: {
-                        useUTC: false
-                    },
-                    rangeSelector: {
-                        inputEnabled: false, 
-                        buttonTheme: {
-                            visibility: 'hidden'
-                        },
-                        labelStyle: {
-                            visibility: 'hidden'
-                        }
-                    },
-                    legend: {
-                        enabled : true,
-                        verticalAlign: 'top',
-                        align : "center"
-                    },
-                    yAxis: {
-                    title: {
-                        text: "Reactive Power(Q)"
-                    },
-                    labels: {
-                        format: '{value}VAR'
-                    },
-                    },
-                    tooltip: {
-                        valueDecimals: 2,
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    exporting: {
-                        enabled: false
-                    },
-
-                    navigator: {
-                        enabled: true
-                    },
-
-                    scrollbar: {
-                        enabled: false
-                    },
-
-                    series: [{
-                        name: ch1_name,
-                        data: (q1)
-                    },
-                    {
-                        name: ch2_name,
-                        data: (q2)
-                    },
-                    {
-                        name: ch3_name,
-                        data: (q3)
-                    },{
-                        name: ch4_name ,
-                        data: (q4)
-                    }]
-                });
-
-                Highcharts.stockChart('container_s', {
-                    title: {
-                        text: 'Apparent Power'
-                    },
-                    subtitle: {
-                        text: moment(start_date).format('DD/MM/YYYY')+' - '+moment(end_date).format('DD/MM/YYYY')
-                    },
-                    time: {
-                        useUTC: false
-                    },
-                    rangeSelector: {
-                        inputEnabled: false, 
-                        buttonTheme: {
-                            visibility: 'hidden'
-                        },
-                        labelStyle: {
-                            visibility: 'hidden'
-                        }
-                    },
-                    legend: {
-                        enabled : true,
-                        verticalAlign: 'top',
-                        align : "center"
-                    },
-                    yAxis: {
-                    title: {
-                        text: "Apparent Power(S)"
-                    },
-                    labels: {
-                        format: '{value}VA'
-                    },
-                    },
-                    tooltip: {
-                        valueDecimals: 2,
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    exporting: {
-                        enabled: false
-                    },
-
-                    navigator: {
-                        enabled: true
-                    },
-
-                    scrollbar: {
-                        enabled: false
-                    },
-
-                    series: [{
-                        name: ch1_name,
-                        data: (s1)
-                    },
-                    {
-                        name: ch2_name,
-                        data: (s2)
-                    },
-                    {
-                        name: ch3_name,
-                        data: (s3)
-                    },{
-                        name: ch4_name ,
-                        data: (s4)
-                    }]
-                });
-
                 Highcharts.stockChart('container_i', {
                     title: {
                         text: 'Current'

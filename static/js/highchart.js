@@ -2,19 +2,10 @@ var p1 = [];
 var p2 = [];
 var p3 = [];
 var p4 = [];
-var q1 = [];
-var q2 = [];
-var q3 = [];
-var q4 = [];
 var i1 = [];
 var i2 = [];
 var i3 = [];
 var i4 = [];
-var s1 = [];
-var s2 = [];
-var s3 = [];
-var s4 = [];
-var pf1 = [];
 for(var i=0;i<e.length;i++){
     var time = e[i]["time"]*1000;
     p1.push([time, e[i]["P1"]]);
@@ -22,22 +13,10 @@ for(var i=0;i<e.length;i++){
     p3.push([time, e[i]["P3"]]);
     p4.push([time, e[i]["P4"]]);
     
-    q1.push([time, e[i]["Q1"]]);
-    q2.push([time, e[i]["Q2"]]);
-    q3.push([time, e[i]["Q3"]]);
-    q4.push([time, e[i]["Q4"]]);
-    
     i1.push([time, e[i]["I1"]]);
     i2.push([time, e[i]["I2"]]);
     i3.push([time, e[i]["I3"]]);
     i4.push([time, e[i]["I4"]]);
-
-    s1.push([time, e[i]["S1"]]);
-    s2.push([time, e[i]["S2"]]);
-    s3.push([time, e[i]["S3"]]);
-    s4.push([time, e[i]["S4"]]);
-
-    // pf1.push([time, e[i]["PF"]]);
 }
 var val_p1 = daily_p[0];
 var val_p2 = daily_p[1];
@@ -68,21 +47,11 @@ chart: {
             var series2p = this.series[1];
             var series3p = this.series[2];
             var series4p = this.series[3];
-            
-            var series1q = this.series[4];
-            var series2q = this.series[5];
-            var series3q = this.series[6];
-            var series4q = this.series[7];
-            
-            var series1s = this.series[8];
-            var series2s = this.series[9];
-            var series3s = this.series[10];
-            var series4s = this.series[11];
 
-            var series1i = this.series[12];
-            var series2i = this.series[13];
-            var series3i = this.series[14];
-            var series4i = this.series[15];
+            var series1i = this.series[4];
+            var series2i = this.series[5];
+            var series3i = this.series[6];
+            var series4i = this.series[7];
 
             var ref = database.ref("energy");
             ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
@@ -98,16 +67,6 @@ chart: {
                 series3p.addPoint([x, p3], false, true);
                 series4p.addPoint([x, p4], false, true);
                 
-                var q1 =  changedData.Q1;
-                var q2 =  changedData.Q2;
-                var q3 =  changedData.Q3;
-                var q4 =  changedData.Q4;
-               
-                series1q.addPoint([x, q1], false, true);
-                series2q.addPoint([x, q2], false, true);
-                series3q.addPoint([x, q3], false, true);
-                series4q.addPoint([x, q4], false, true);
-                
                 var i1 =  changedData.I1;
                 var i2 =  changedData.I2;
                 var i3 =  changedData.I3;
@@ -117,17 +76,6 @@ chart: {
                 series2i.addPoint([x, i2], false, true);
                 series3i.addPoint([x, i3], false, true);
                 series4i.addPoint([x, i4], true, true);
-
-                var s1 =  changedData.S1;
-                var s2 =  changedData.S2;
-                var s3 =  changedData.S3;
-                var s4 =  changedData.S4;
-               
-                series1s.addPoint([x, s1], false, true);
-                series2s.addPoint([x, s2], false, true);
-                series3s.addPoint([x, s3], false, true);
-                series4s.addPoint([x, s4], true, true);
-                // alert("t")
                 
                 $.ajax({
                     url: '/ajax/get_current_energy/',
@@ -199,33 +147,7 @@ yAxis: [{
     title: {
         text: 'Active Power(P)'
     },
-    height: '20%',
-    lineWidth: 2
-}, {
-    labels: {
-        align: 'right',
-        x: -3,
-        format: '{value}VAR'
-    },
-    title: {
-        text: 'Reactive Power(Q)'
-    },
-    top: '25%',
-    height: '20%',
-    offset: 0,
-    lineWidth: 2
-}, {
-    labels: {
-        align: 'right',
-        x: -3,
-        format: '{value}VA'
-    },
-    title: {
-        text: 'Apparent Power(S)'
-    },
-    top: '50%',
-    height: '20%',
-    offset: 0,
+    height: '45%',
     lineWidth: 2
 }, {
     labels: {
@@ -236,8 +158,8 @@ yAxis: [{
     title: {
         text: 'Current(I)'
     },
-    top: '75%',
-    height: '20%',
+    top: '55%',
+    height: '45%',
     offset: 0,
     lineWidth: 2
 }],
@@ -283,77 +205,27 @@ series: [{
     colorIndex:0,
     name: ch1_name,
     linkedTo: "ch1",
-    data: (q1),
-    yAxis:1,
-},{
-    colorIndex:1,
-    name: ch2_name,
-    linkedTo: "ch2",
-    data: (q2),
-    yAxis:1,
-},
-{
-    colorIndex:2,
-    name: ch3_name,
-    linkedTo: "ch3",
-    data: (q3),
-    yAxis:1,
-},{
-    colorIndex:3,
-    name: ch4_name ,
-    linkedTo: "ch4",
-    data: (q4),
-    yAxis:1,
-},{
-    colorIndex:0,
-    name: ch1_name,
-    linkedTo: "ch1",
-    data: (s1),
-    yAxis:2,
-},{
-    colorIndex:1,
-    name: ch2_name,
-    linkedTo: "ch2",
-    data: (s2),
-    yAxis:2,
-},
-{
-    colorIndex:2,
-    name: ch3_name,
-    linkedTo: "ch3",
-    data: (s3),
-    yAxis:2,
-},{
-    colorIndex:3,
-    name: ch4_name ,
-    linkedTo: "ch4",
-    data: (s4),
-    yAxis:2,
-},{
-    colorIndex:0,
-    name: ch1_name,
-    linkedTo: "ch1",
     data: (i1),
-    yAxis:3,
+    yAxis:1,
 },{
     colorIndex:1,
     name: ch2_name,
     linkedTo: "ch2",
     data: (i2),
-    yAxis:3,
+    yAxis:1,
 },
 {
     colorIndex:2,
     name: ch3_name,
     linkedTo: "ch3",
     data: (i3),
-    yAxis:3,
+    yAxis:1,
 },{
     colorIndex:3,
     name: ch4_name ,
     linkedTo: "ch4",
     data: (i4),
-    yAxis:3,
+    yAxis:1,
 }]
 });
 
@@ -628,554 +500,6 @@ Highcharts.stockChart('activePow4', {
         colorIndex:3,
         name: ch4_name ,
         data: (p4)
-    }]
-});
-
-Highcharts.stockChart('reactivePow1', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series1 = this.series[0];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var q1 =  changedData.Q1;
-                
-                    series1.addPoint([x, q1], true, true);
-                })
-            }
-        }
-    },
-    title:{
-        text: "Reactive Power (Q)"
-    },
-    subtitle:{
-        text: ch1_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VAR'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        name: ch1_name,
-        data: (q1)
-    }]
-});
-
-Highcharts.stockChart('reactivePow2', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series2 = this.series[1];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var q2 =  changedData.Q2;
-                
-                    series2.addPoint([x, q2], true, true);
-                })
-            }
-        }
-    },
-    subtitle:{
-        text: ch2_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VAR'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        colorIndex:1,
-        name: ch2_name,
-        data: (q2)
-    }]
-});
-
-Highcharts.stockChart('reactivePow3', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series3 = this.series[2];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var q3 =  changedData.Q3;
-                
-                    series3.addPoint([x, q3], true, true);
-                })
-            }
-        }
-    },
-    subtitle:{
-        text: ch3_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VAR'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        colorIndex:2,
-        name: ch3_name,
-        data: (q3)
-    }]
-});
-
-Highcharts.stockChart('reactivePow4', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series4 = this.series[3];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var q4 =  changedData.Q4;
-                
-                    series4.addPoint([x, q4], true, true);
-                })
-            }
-        }
-    },
-    subtitle:{
-        text: ch4_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VAR'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        colorIndex:3,
-        name: ch4_name,
-        data: (q4)
-    }]
-});
-
-Highcharts.stockChart('apparentPow1', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series1 = this.series[0];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var s1 =  changedData.S1;
-                
-                    series1.addPoint([x, s1], true, true);
-                })
-            }
-        }
-    },
-    title:{
-        text: "Apparent Power (S)"
-    },
-    subtitle:{
-        text: ch1_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VA'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        name: ch1_name,
-        data: (s1)
-    }]
-});
-
-Highcharts.stockChart('apparentPow2', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series2 = this.series[1];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var s2 =  changedData.S2;
-                
-                    series2.addPoint([x, s2], true, true);
-                })
-            }
-        }
-    },
-    subtitle:{
-        text: ch2_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VA'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        colorIndex:1,
-        name: ch2_name,
-        data: (s2)
-    }]
-});
-
-Highcharts.stockChart('apparentPow3', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series3 = this.series[2];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var s3 =  changedData.S3;
-                
-                    series3.addPoint([x, s3], true, true);
-                })
-            }
-        }
-    },
-    subtitle:{
-        text: ch3_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VA'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        colorIndex:2,
-        name: ch3_name,
-        data: (s3)
-    }]
-});
-
-Highcharts.stockChart('apparentPow4', {
-    chart: {
-        events: {
-            load: function () {
-                // set up the updating of the chart each second
-                var series4 = this.series[3];
-                var ref = database.ref("energy");
-                ref.orderByChild("time").limitToLast(1).on("child_added", function(snapshot) {
-                    var changedData = snapshot.val();                        
-                    var x =  changedData.time*1000;
-                    var s4 =  changedData.S4;
-                
-                    series4.addPoint([x, s4], true, true);
-                })
-            }
-        }
-    },
-    subtitle:{
-        text: ch4_name
-    },
-    time: {
-        useUTC: false
-    },
-
-    rangeSelector: {
-        buttonTheme: {
-            visibility: 'hidden'
-        },
-        labelStyle: {
-            visibility: 'hidden'
-        },
-        inputEnabled: false, // ปิดเลือกวันที่
-    },
-    legend: {
-        enabled : false,
-        verticalAlign: 'top',
-        align : "center"
-    },
-    yAxis: {
-        labels: {
-            format: '{value}VA'
-        },
-    },
-    tooltip: {
-        valueDecimals: 2,
-    },
-    credits: {
-        enabled: false
-    },
-    exporting: {
-        enabled: false
-    },
-
-    navigator: {
-        enabled: false
-    },
-
-    scrollbar: {
-        enabled: false
-    },
-
-    series: [{
-        colorIndex:3,
-        name: ch4_name,
-        data: (s4)
     }]
 });
 

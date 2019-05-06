@@ -603,6 +603,7 @@ def set_data():
     ref = db.reference('energy')
     result = ref.order_by_child('time').limit_to_last(500).get() # 30 mins
     value_array = list(result.values())
+    # print(value_array)
     watt_data = deque(value_array)
 
 def calculate_cost_energy(energy):
